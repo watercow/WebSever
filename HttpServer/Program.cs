@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApplication1
+namespace HttpServer
 {
     class Program
     {
         static void Main(string[] args)
         {
+            HttpServer test = new HttpServer();
+            test.initServer();
         }
     }
 }
