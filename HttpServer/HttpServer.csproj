@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpServer\FileHandler.cs" />
     <Compile Include="HttpServer\HttpProcessor.cs" />
     <Compile Include="HttpServer\Message\HttpRequest.cs" />
     <Compile Include="HttpServer\Message\HttpResponse.cs" />

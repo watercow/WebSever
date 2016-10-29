@@ -12,6 +12,9 @@ namespace WebServer.HttpServer
         public string Uri { get; set; }
         public string Ver { get; set; }
         public string Path { get; set; }
+
+        public Dictionary<string, string> Header { get; set; }
+
         public string Content { get; set; }
     }
 }

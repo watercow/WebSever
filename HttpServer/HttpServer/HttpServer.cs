@@ -14,13 +14,14 @@ namespace WebServer.HttpServer
     {
         public int server_port { set; get; }
         public string server_address { set; get; }
+        public string baes_path { set; get; }
         public TcpListener Listener;
 
         //设定监听端口/主机地址
         public HttpServer(int set_port, string set_addr)
         {
             this.server_port = set_port;
-            this.server_address = set_addr;
+            //this.server_address = set_addr;
         }
 
         //监听Tcp连接请求
@@ -32,11 +33,20 @@ namespace WebServer.HttpServer
             while (true)
             {
                 TcpClient new_client = this.Listener.AcceptTcpClient();
+
+                IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
+
+                Console.WriteLine("--------------------------------");
                 Console.WriteLine(
-                    "收到Tcp连接请求");
+                    "收到Tcp连接请求 {0}: {1}",
+                    clientIP.Address,
+                    clientIP.Port);
+
                 Thread thread = new Thread(HttpProcessor.ClientHandler);
+
                 Console.WriteLine(
                     "开始请求处理");
+
                 thread.Start(new_client);
             }
         }
