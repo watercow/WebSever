@@ -19,14 +19,14 @@ namespace WebServer.HttpServer
             resourceUri = this.base_path + resourceUri.Replace('/', '\\');
             
             byte[] buffer = File.ReadAllBytes(resourceUri);
-            
-            //MemoryStream ms = new MemoryStream();
-            //GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
-            //gzip.Write(buffer, 0, buffer.Length);
-            //gzip.Close();
 
-            //return ms.ToArray();
-            return buffer;
+            MemoryStream ms = new MemoryStream();
+            GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
+            gzip.Write(buffer, 0, buffer.Length);
+            gzip.Close();
+
+            return ms.ToArray();
+            //return buffer;
         }
     }
 }

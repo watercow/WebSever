@@ -25,19 +25,19 @@ namespace WebServer.HttpServer
                 //读取请求行
                 HttpRequest request = GetRequest(inputStream, outputStream);
 
-                Console.WriteLine(
-                    "Method : {0} \nUri : {1} \nVer : {2} ",
-                    request.Method,
-                    request.Uri,
-                    request.Ver
-                    );
-                Console.WriteLine("--------------------------------");
-                Console.WriteLine("Following is the parsed headers:");
-                Console.WriteLine("--------------------------------");
-                foreach (KeyValuePair<string, string> item in request.Header)
-                {
-                    Console.WriteLine("{0}: {1}", item.Key, item.Value);
-                }
+                    Console.WriteLine(
+                        "Method : {0} \nUri : {1} \nVer : {2} ",
+                        request.Method,
+                        request.Uri,
+                        request.Ver
+                        );
+                    Console.WriteLine("--------------------------------");
+                    Console.WriteLine("Following is the parsed headers:");
+                    Console.WriteLine("--------------------------------");
+                    foreach (KeyValuePair<string, string> item in request.Header)
+                    {
+                        Console.WriteLine("{0}: {1}", item.Key, item.Value);
+                    }
 
                 HttpResponse response = new HttpResponse()
                 {
@@ -51,7 +51,7 @@ namespace WebServer.HttpServer
                 handle.base_path = "..\\..\\Resources";
                 response.Content = handle.Handler(request);
                 response.Header.Add("Content-Type", "text/html");
-                response.Header.Add("Content-Encoding", "UTF-8");
+                response.Header.Add("Content-Encoding", "gzip");
 
                 string responseLine = string.Format("{0} {1} {2}\r\n", response.Version, response.StatusCode, response.ReasonPhrase);
                 string headerLine = responseLine + string.Join("\r\n", response.Header.Select(x => string.Format("{0}: {1}", x.Key, x.Value))) + "\r\n\r\n";
