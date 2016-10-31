@@ -13,53 +13,40 @@ namespace WebServer.HttpServer
 {
     public class HttpProcessor
     {
+        #region Public Methods
         //处理客户端请求
         public static void ClientHandler(object oclient)    //Thread实例使用object对象
         {
             TcpClient client = (TcpClient)oclient;
             Stream inputStream = client.GetStream();
             Stream outputStream = client.GetStream();
-            Console.WriteLine("\n解析请求行...");
             try
             {
                 //读取请求行
-                HttpRequest request = GetRequest(inputStream, outputStream);
+                HttpRequest request = GetRequest(inputStream);
 
-                    Console.WriteLine(
+                #if CONSOLE_APP
+                Console.WriteLine("\n解析请求行...");
+                Console.WriteLine(
                         "Method : {0} \nUri : {1} \nVer : {2} ",
                         request.Method,
                         request.Uri,
-                        request.Ver
+                        request.Version
                         );
-                    Console.WriteLine("--------------------------------");
-                    Console.WriteLine("Following is the parsed headers:");
-                    Console.WriteLine("--------------------------------");
-                    foreach (KeyValuePair<string, string> item in request.Header)
-                    {
-                        Console.WriteLine("{0}: {1}", item.Key, item.Value);
-                    }
-
-                HttpResponse response = new HttpResponse()
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine("Following is the parsed headers:");
+                Console.WriteLine("--------------------------------");
+                foreach (KeyValuePair<string, string> item in request.Header)
                 {
-                    Version = "HTTP/1.1",
-                    StatusCode = Convert.ToString((int)HttpStatusCode.Ok),
-                    ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString()),
-                    Header = new Dictionary<string, string>(),
-                };
+                    Console.WriteLine("{0}: {1}", item.Key, item.Value);
+                }
+                #endif
 
-                FileHandler handle = new FileHandler();
-                handle.base_path = "..\\..\\Resources";
-                response.Content = handle.Handler(request);
-                response.Header.Add("Content-Type", "text/html");
-                response.Header.Add("Content-Encoding", "gzip");
+                //处理Http request并生成响应头
+                HttpResponse response = GetResponse(request);
 
-                string responseLine = string.Format("{0} {1} {2}\r\n", response.Version, response.StatusCode, response.ReasonPhrase);
-                string headerLine = responseLine + string.Join("\r\n", response.Header.Select(x => string.Format("{0}: {1}", x.Key, x.Value))) + "\r\n\r\n";
-                byte[] buffer = Encoding.Default.GetBytes(headerLine);
-                outputStream.Write(buffer, 0, buffer.Length);
-
-                outputStream.Write(response.Content, 0, response.Content.Length);
-
+                WriteResponse(outputStream, response);
+                
                 outputStream.Flush();
                 outputStream.Close();
                 outputStream = null;
@@ -76,9 +63,10 @@ namespace WebServer.HttpServer
                 client.Close();
             }
         }
+        #endregion
 
         #region Private Methods
-        private static HttpRequest GetRequest(Stream inputStream, Stream outputStream)
+        private static HttpRequest GetRequest(Stream inputStream)
         {
             HttpRequest request = new HttpRequest();
 
@@ -90,7 +78,7 @@ namespace WebServer.HttpServer
             }
             request.Method = tokens[0];
             request.Uri = tokens[1];
-            request.Ver = tokens[2];
+            request.Version = tokens[2];
 
             Dictionary<string, string> requestHeader = new Dictionary<string, string>();
            while ((thisLine = Readline(inputStream)) != null)
@@ -122,6 +110,39 @@ namespace WebServer.HttpServer
             }
 
             return request;
+        }
+
+        private static HttpResponse GetResponse(HttpRequest request)
+        {
+            HttpResponse response = new HttpResponse();
+
+            if (request.Version != HttpServer.PROTOCOL_VERSION) 
+            {
+                throw new HttpException.Http_InvalidProtocolVersion(null, request.Version);
+            }
+
+            response.Version = request.Version;
+
+            response.Header.Add("Content-Type", "text/html");
+            response.Header.Add("Content-Encoding", "gzip");
+
+            FileHandler handle = new FileHandler();
+            handle.base_path = HttpServer.SITE_PATH;
+            response.Content = handle.Handler(request);
+
+            response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
+            response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
+
+            return response;
+        }
+
+        private static void WriteResponse(Stream outputStream, HttpResponse response)
+        {
+            string responseLine = string.Format("{0} {1} {2}\r\n", response.Version, response.StatusCode, response.ReasonPhrase);
+            string headerLine = responseLine + string.Join("\r\n", response.Header.Select(x => string.Format("{0}: {1}", x.Key, x.Value))) + "\r\n\r\n";
+            byte[] buffer = Encoding.Default.GetBytes(headerLine);
+            outputStream.Write(buffer, 0, buffer.Length);
+            outputStream.Write(response.Content, 0, response.Content.Length);
         }
 
         private static string Readline(Stream stream)

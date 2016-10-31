@@ -10,7 +10,7 @@ namespace WebServer.HttpServer
     {
         public string Method { get; set; }
         public string Uri { get; set; }
-        public string Ver { get; set; }
+        public string Version { get; set; }
         public string Path { get; set; }
 
         public Dictionary<string, string> Header { get; set; }

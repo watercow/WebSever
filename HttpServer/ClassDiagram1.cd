@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WebServer.HttpServer.HttpException.Http_InvalidUri" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\Exception\HttpException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.HttpException.Http_BadRequest" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\Exception\HttpException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.HttpException.Http_InvalidProtocolVersion" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\Exception\HttpException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.FileHandler" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\FileHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.HttpProcessor" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAABAAAACAAAAEAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\HttpProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.HttpServer" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAACAAAAAAAEgAAAAAAAAAAACAAAAAIAAAAAA=</HashCode>
+      <FileName>HttpServer\HttpServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.HttpRequest" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAAAAAAgAAAAIAAAAgAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\Message\HttpRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebServer.HttpServer.HttpResponse" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAAAAAAgAAAAAAgAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>HttpServer\Message\HttpResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="WebServer.HttpServer.HttpStatusCode" Collapsed="true">
+    <Position X="0.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEASAAICAAAAAAwACAAAAAAAAEAAAQAAAAhAAAAAAA=</HashCode>
+      <FileName>HttpServer\Message\HttpResponse.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

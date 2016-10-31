@@ -30,5 +30,9 @@ namespace WebServer.HttpServer
         public Dictionary<string, string> Header { get; set; }
         public byte[] Content { get; set; }
         
+        public HttpResponse()
+        {
+            Header = new Dictionary<string, string>();
+        }
     }
 }

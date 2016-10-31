@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,40 +13,56 @@ namespace WebServer.HttpServer
 {
     public class HttpServer
     {
-        public int server_port { set; get; }
-        public string server_address { set; get; }
-        public string baes_path { set; get; }
+        #region GlobalVariables
+        public static string PROTOCOL_VERSION { set; get; }
+        public static int SERVER_PORT { set; get; }
+        public static IPAddress SITE_HOST { set; get; }
+        public static string SITE_PATH { set; get; }
+        #endregion
+
         public TcpListener Listener;
 
+
         //设定监听端口/主机地址
-        public HttpServer(int set_port, string set_addr)
+        /// <summary>
+        /// 实例化一个Http服务器对象
+        /// </summary>
+        public HttpServer(int set_port, IPAddress set_addr)
         {
-            this.server_port = set_port;
-            //this.server_address = set_addr;
+            HttpServer.SERVER_PORT = set_port;
+            HttpServer.SITE_HOST = set_addr;
         }
 
         //监听Tcp连接请求
-        public void Listen()
+        /// <summary>
+        /// 启动Http服务器对象
+        /// </summary>
+        public void Start()
         {
-            this.Listener = new TcpListener(IPAddress.Any, server_port);
+            this.Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
             this.Listener.Start();
-            Console.WriteLine("开始Tcp监听");
+
+            #if CONSOLE_APP
+                Console.WriteLine("开始Tcp监听");
+            #endif
+
             while (true)
             {
                 TcpClient new_client = this.Listener.AcceptTcpClient();
 
                 IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
+                
+                Thread thread = new Thread(HttpProcessor.ClientHandler);
 
+                #if CONSOLE_APP
                 Console.WriteLine("--------------------------------");
                 Console.WriteLine(
                     "收到Tcp连接请求 {0}: {1}",
                     clientIP.Address,
                     clientIP.Port);
-
-                Thread thread = new Thread(HttpProcessor.ClientHandler);
-
                 Console.WriteLine(
                     "开始请求处理");
+                #endif
 
                 thread.Start(new_client);
             }
