@@ -1,8 +1,468 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Default</title>
-    </head>
-    <body>
-        <h5>牛神霸气威武Carry全场</h5>
-    </body>
+<head>
+    <meta charset="gzip">
+    <title>菜单栏</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <style type="text/css">
+        html,body{
+	margin: 0;
+	padding: 0;
+}
+body{
+	background-color: #000;
+}
+.board{
+	position: absolute;
+	left: 50%;
+	margin-left: -100px;
+	top: 100px;
+	width: 316px;
+	height: 300px;
+	margin: 0 auto;
+	background-color: #f7f7f7;
+	border-radius: 8px 8px 8px 8px;
+}
+form{
+	padding: 20px;
+}
+img{
+	display: block;
+	margin: 5px auto 0 auto;
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+}
+form input{
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing:border-box;
+	width: 100%;
+	height: 44px;
+	font-size: 16px;
+	border: 1px solid #d9d9d9;
+	outline-style: none;
+	padding-left: 10px;
+}
+
+input:first-child{
+	border-radius: 8px 8px 0px 0px;
+}
+input[type=password]{
+	border-radius: 0px 0px 8px 8px;
+	margin-top: -1px;
+}
+
+html,body{
+		margin: 0;
+	}
+header{
+		width: 100%;
+		height: 60px;
+		background-color: #000;
+	}
+
+nav{
+	width: 750px;
+	height: 100%;
+	margin: 0 auto 0 auto; /*上右下左*/
+}
+a.logo{
+	color: #fff;
+	line-height: 60px;
+	font-size: 30px;
+	text-decoration: none;
+	font-family: Microsoft YaHei;
+	float: left;
+}
+
+@font-face {
+	font-family: MarckScript;
+	src:url('./MarckScript.ttf');
+}
+
+ul{
+	float: left;
+	margin: 0;
+	padding: 0 0 0 60px;
+}
+
+li{
+	display: inline-block;
+	color: #fff;
+	padding: 0 20px;
+	line-height: 60px;
+	font-size: 20px;
+	font-family: Microsoft YaHei;
+}
+
+.form{
+	padding: 5px 10px 5px 10px;
+	background-color: #288AD6;
+	border-radius: 5px;
+	font-family: MarckScript;
+}
+
+/*.contact{
+	position: relative;
+	width: 100%;
+	height: 900px;
+	background-color: #0CA3CC;
+}*/
+
+.contact{
+	margin-top: 0;
+	background-color: #0CA3CC;
+	height: 1200px;
+	width: 100%;
+}
+
+.title_bar{
+	background-color: #F2F2F2;
+	margin: 0 auto;
+	height: 61px;
+	width: 750px;
+}
+
+.title{
+	float: left;
+	line-height: 60px;
+	width:100px;
+	height:60px;
+	background-color: #F2F2F2;
+	font-family: Microsoft YaHei;
+	font-size: 25px;
+	padding-left: 20px;
+}
+
+#add_button{
+	cursor: pointer;
+	float:right;
+	background-color: #F2F2F2;
+	font-family: Microsoft YaHei;
+	font-size: 25px;
+	line-height: 60px;
+	height: 60px;
+	width: 100px;
+}
+
+#add_button:hover{
+        background-color: #7b7b7b;
+    }
+#contactlist{
+	background-color: #ffffff;
+	margin: 0px auto;
+	width: 750px;
+	height: auto;
+	box-shadow: 0 2px 4px rgba(0,0,0,.24);
+}
+
+div.show{
+	height: 44px;
+	float: left;
+	background-color: #ffffff;
+}
+div.name{
+	width: 200px;
+	height: 40px;
+	line-height: 40px;
+	margin-left: 40px;
+	float: left;
+	font-family: Microsoft YaHei;
+	font-size: 20px;
+}
+div.email{
+	width: 222px;
+	height: 40px;
+	line-height: 40px;
+	float: left;
+	font-family: Microsoft YaHei;
+	font-size: 15px;
+}
+div.phone{
+	width: 200px;
+	height: 40px;	
+	line-height: 40px;
+	float: left;
+	font-family: Microsoft YaHei;
+	font-size: 15px;
+}
+
+div.edit{
+	width: 44px;
+	height: 44px;
+	background-image: url(../img/2.png);
+	float: right;
+	cursor:pointer;
+}
+
+div.action{
+float: left;
+}
+
+div.delete{
+	width: 44px;
+	height: 44px;
+	background-image: url(../img/1.png);
+	float: right;
+	cursor:pointer;
+}
+
+@-webkit-keyframes slide-down {
+    0%{transform: scale(1,0);}
+    25%{transform: scale(1,0.3);}
+    50%{transform: scale(1,0.7);}
+    75%{transform: scale(1,0.9);}
+    100%{transform: scale(1,1);}
+}
+
+div.hide{
+	float: left;
+	width: 675px;
+	display: none;
+	transform-origin: 50% 0;
+	-webkit-animation: slide-down .2s ease-in;
+}
+
+input{
+	width: 747px;
+	height: 35px;
+}
+
+input[type="text"]{
+	font-size: 20px;
+	font-family: Microsoft YaHei;
+} 
+
+button.confirm{
+	display: block;
+	font-family: Microsoft YaHei;
+	font-size: 25px;
+	background-color: #000;
+	width: 750px;
+	color: #ffffff;
+	padding-bottom: 0px;
+	border: none;
+}
+
+button.cancel{
+	display: block;
+	font-family: Microsoft YaHei;
+	font-size: 25px;
+	background-color: #800080;
+	width: 750px;
+	color: #ffffff;
+	padding-top: 0px;
+	border: none;
+}
+
+    </style>
+    <script src="./js/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a class="logo">Watercow</a><!-- 行内元素 -->
+            <ul>
+                <li>guardian</li>
+                <li>NaVi</li>
+                <li>Fantic</li>
+                <li>Cow</li>
+                <li><a class="form">form</a></li>
+            </ul>
+        </nav><!-- 适配手机端 -->
+    </header>
+    <div class="contact">
+        <div class="title_bar">
+            <div class="title">通讯录</div>
+            <div id="add_button">+ 添加</div>
+        </div>
+        <div id="contactlist">
+            <div class="show">
+                <div class="name"></div>
+                <div class="email"></div>
+                <div class="phone"></div>
+                <div class="action"></div>
+                <div class="edit"></div>
+                <div class="delete"></div>
+            </div>
+            <div class="hide">
+                <input type="text" name="name" placeholder="姓名">
+                <input type="text" name="email" placeholder="邮箱">
+                <input type="text" name="phone" placeholder="手机">
+                <button class="confirm">确定</button>
+                <button class="cancel">取消</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+	(function (win) {
+		var contactList = [];
+		var idNumber;
+		var contactHtml = '<div class="show"><div class="name"></div><div class="email"></div><div class="phone"></div></div><div class="action"><div class="edit"></div><div class="delete"></div></div><div class="hide"><input type="text" name="name" placeholder="name"><input type="text" name="email" placeholder="email"><input type="text" name="phone" placeholder="phone"><button class="confirm">confirm</button><button class="cancel">cancel</button></div>';
+		var index = {
+			init : function() {
+				this.bindevent();
+				this.getContactList();
+			},
+			bindevent :function(){
+				var self = this
+				$(document).on('click','#add_button',function(){
+					document.getElementById('contactlist').appendChild(self.createNode());
+					})
+					.on('click','.edit',function () {
+						var showNode = this.parentNode.previousElementSibling;
+						var hideNode = this.parentNode.nextElementSibling;
+						hideNode.setAttribute('style','display:block');
+						for(var i=0;i<3;i++){
+							hideNode.children[i].value = showNode.children[i].innerHTML;
+						}
+						hideNode.children[0].focus;
+               		})
+					.on('click','.cancel',function () {
+						this.parentNode.setAttribute('style','display:none');
+					})
+					.on('click','.confirm',function () {
+						var self = this;
+						var personNode = this.parentNode.parentNode;
+						var showNode = personNode.children[0];
+						var hideNode = this.parentNode;
+						var data = {};
+						var emailResult = 0;
+						var phoneResult = 0;
+						data.id = personNode.id.substr(7,personNode.id.length-7);
+						data.name = hideNode.children[0].value;
+						data.email = hideNode.children[1].value;
+						data.phone = hideNode.children[2].value;
+						var patternEmail = /^([a-zA-Z0-9]+[-_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[-_.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,6}$/;
+						var patternPhone =  /^\d{11}$/;
+						emailResult = patternEmail.test(data.email);
+						phoneResult = patternPhone.test(data.phone);
+						if(emailResult !== true || phoneResult !== true)
+						{
+							alert("格式错误");
+							return;
+						}
+						if (data.id !== '')
+						{
+							$.ajax({
+								url: 'http://120.76.117.125:86/users/' + data.id,
+								type: 'PUT',
+								data: data,
+								datatype: 'json',
+								success: function (id) {
+									if (id !== '') {
+										idNumber = eval('(' + id + ')');
+										personNode.id = 'contact' + idNumber.id;
+										showNode.children[0].innerHTML = data.name;
+										showNode.children[1].innerHTML = data.email;
+										showNode.children[2].innerHTML = data.phone;
+										hideNode.setAttribute('style','display:none');
+										alert('ok');
+									}
+									else {
+										alert('failed');
+									}
+								},
+								error: function () {
+									alert('error when put');
+								}
+							})
+						}
+						else
+						{
+							$.ajax({
+								url: 'http://120.76.117.125:86/users',
+								type: 'POST',
+								data: data,
+								datatype: 'json',
+								success: function (id) {
+									if (id !== '') {
+										idNumber = eval('(' + id + ')');
+										personNode.id = 'contact' + idNumber.id;
+										showNode.children[0].innerHTML = data.name;
+										showNode.children[1].innerHTML = data.email;
+										showNode.children[2].innerHTML = data.phone;
+										hideNode.setAttribute('style','display:none');
+										alert('ok');
+									}
+									else {
+										alert('failed');
+									}
+								},
+								error: function () {
+									alert('error when post');
+								}
+							})
+						}
+					})
+					.on('click','.delete',function () {
+						var self = this;
+						var personNode = this.parentNode.parentNode;
+						var data = {};
+						data.id = personNode.id.substr(7,personNode.id.length-7);
+						var idNumber_delete=data.id;
+						if(data.id==''){
+							personNode.parentNode.removeChild(personNode);
+							return;
+						}
+						$.ajax({
+							url: 'http://120.76.117.125:86/users/' + idNumber_delete,
+							type: 'DELETE',
+							datatype: 'json',
+							success: function (id) {
+								if(id != ''){
+									personNode.parentNode.removeChild(personNode);
+									alert('ok');
+								}
+								else
+								{
+									alert('failed');
+								}
+							},
+							error: function () {
+								alert('error');
+							}
+						})
+					})
+			},
+			getContactList : function () {
+				var self = this;
+				$.ajax({
+					url:'http://120.76.117.125:86/users',
+					type:'get',
+					datatype:'json',
+					success:function (data) {
+						contactList = JSON.parse(data);
+						self.fullContactList(contactList);
+					},
+					error:function () {
+						alert("error when get contactList");
+					}
+				})
+			},
+			fullContactList : function (data) {
+				var self = this;
+				var length = data.length;
+				var contactListNode = document.getElementById('contactlist');
+				for(var i=0;i<length;i++){
+					contactListNode.appendChild(self.createNode(data[i]));
+				}
+			},
+			createNode : function (data) {
+				var info = data?data:{id:'',name:'',email:'',phone:''};
+				var node = document.createElement('div');
+				node.innerHTML = contactHtml;
+				node.setAttribute('class','person')
+				node.id = 'contact' + info.id;
+				node.children[0].children[0].innerHTML = info.name;
+				node.children[0].children[1].innerHTML = info.email;
+				node.children[0].children[2].innerHTML = info.phone;
+				return node;
+			}
+		}
+		index.init();
+	})(window)
+</script>
 </html>
