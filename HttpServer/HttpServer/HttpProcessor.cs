@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Net.Sockets;
 using System.Net;
 using System.Text.RegularExpressions;
+using WebServer.HttpServer;
 
 namespace WebServer.HttpServer
 {
@@ -24,8 +25,20 @@ namespace WebServer.HttpServer
             {
                 //读取请求行
                 HttpRequest request = GetRequest(inputStream);
+                //处理Http request并生成响应头
+                HttpResponse response = GetResponse(request);
+                //将响应报文response写入outoutStream中
+                WriteResponse(outputStream, response);
+                outputStream.Flush();
 
-                #if CONSOLE_APP
+                outputStream.Close();
+                outputStream = null;
+
+                inputStream.Close();
+                inputStream = null;
+
+                #region CONSOLE
+#if CONSOLE_APP
                 Console.WriteLine("\n解析请求行...");
                 Console.WriteLine(
                         "Method : {0} \nUri : {1} \nVer : {2} ",
@@ -40,28 +53,24 @@ namespace WebServer.HttpServer
                 {
                     Console.WriteLine("{0}: {1}", item.Key, item.Value);
                 }
-                #endif
-
-                //处理Http request并生成响应头
-                HttpResponse response = GetResponse(request);
-
-                WriteResponse(outputStream, response);
+#endif
+                #endregion
                 
-                outputStream.Flush();
-                outputStream.Close();
-                outputStream = null;
-
-                inputStream.Close();
-                inputStream = null;
-
                 //断开连接
                 client.Close();
             }
-            catch(Exception ex)
+            #region Http Exception Handler
+            catch(HttpException.WrongProtocolVersion ex)
             {
                 Console.WriteLine(ex.Message);
                 client.Close();
             }
+            catch (HttpException.BadRequest ex)
+            {
+                Console.WriteLine(ex.Message);
+                client.Close();
+            }
+            #endregion
         }
         #endregion
 
@@ -74,14 +83,19 @@ namespace WebServer.HttpServer
             string[] tokens = thisLine.Split(' ');
             if (tokens.Length != 3)
             {
-                throw new Exception("invalid http request line: " + thisLine);
+                throw new HttpException.BadRequest("400 bad request");
             }
             request.Method = tokens[0];
             request.Uri = tokens[1];
             request.Version = tokens[2];
 
+            if (request.Version != HttpServer.PROTOCOL_VERSION)
+            {
+                throw new HttpException.WrongProtocolVersion("Wrong HTTP version: " + request.Version);
+            }
+
             Dictionary<string, string> requestHeader = new Dictionary<string, string>();
-           while ((thisLine = Readline(inputStream)) != null)
+            while ((thisLine = Readline(inputStream)) != null)
             {
                 if (thisLine.Length == 0) { break; }
                 
@@ -89,12 +103,13 @@ namespace WebServer.HttpServer
                 Match header = Regex.Match(thisLine, pattern);
                 if (header.Success== false)
                 {
-                    throw new Exception("invalid http request header: " + thisLine);
+                    throw new HttpException.BadRequest("400 bad request: " + thisLine);
                 }
                 requestHeader.Add(header.Result("${headerName}"), header.Result("${headerValue}"));
             }
             request.Header = requestHeader;
 
+            //接收来自client端的content数据
             if (request.Header.ContainsKey("Content-Length"))
             {
                 int totalBytes = Convert.ToInt32(request.Header["Content-Length"]);
@@ -115,20 +130,25 @@ namespace WebServer.HttpServer
         private static HttpResponse GetResponse(HttpRequest request)
         {
             HttpResponse response = new HttpResponse();
-
-            if (request.Version != HttpServer.PROTOCOL_VERSION) 
+            try
             {
-                throw new HttpException.Http_InvalidProtocolVersion(null, request.Version);
+                switch (request.Method)
+                {
+                    case "GET":
+                        HttpMethodHandler.GetMethodHandler(request, response);
+                        break;
+                    case "POST":
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
             response.Version = request.Version;
 
-            response.Header.Add("Content-Type", "text/html");
-            response.Header.Add("Content-Encoding", "gzip");
-
-            FileHandler handle = new FileHandler();
-            handle.base_path = HttpServer.SITE_PATH;
-            response.Content = handle.Handler(request);
 
             response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
             response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());

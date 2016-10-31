@@ -12,7 +12,7 @@ namespace WebServer.HttpServer
     {
         public string base_path { set; get; }
 
-        public byte[] Handler(HttpRequest request)
+        public byte[] Handler(HttpRequest request, string encoding)
         {
             string resourceUri = request.Uri;
             
@@ -20,13 +20,20 @@ namespace WebServer.HttpServer
             
             byte[] buffer = File.ReadAllBytes(resourceUri);
 
-            MemoryStream ms = new MemoryStream();
-            GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
-            gzip.Write(buffer, 0, buffer.Length);
-            gzip.Close();
+            switch (encoding)
+            {
+                case "gzip":
+                    MemoryStream ms = new MemoryStream();
+                    GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
+                    gzip.Write(buffer, 0, buffer.Length);
+                    gzip.Close();
+                    return ms.ToArray();
+                case "identity":
+                    return buffer;
 
-            return ms.ToArray();
-            //return buffer;
+            }
+
+            return buffer;
         }
     }
 }

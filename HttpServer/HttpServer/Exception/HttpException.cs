@@ -6,20 +6,54 @@ using System.Threading.Tasks;
 
 namespace WebServer.HttpServer.HttpException
 {
-    public class Http_InvalidUri : ApplicationException
+    public class HttpException : ApplicationException
     {
-        public Http_InvalidUri(string message) : base(message) {  }
+        public HttpException() { }
+        public HttpException(string message) : base(message) { }
+        public HttpException(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
 
     }
 
-    public class Http_BadRequest : ApplicationException
+    public class WrongProtocolVersion : HttpException
     {
-        public Http_BadRequest(string message) : base(message) { }
-    }
+        public WrongProtocolVersion() { }
+        public WrongProtocolVersion(string message) : base(message) { }
+        public WrongProtocolVersion(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
 
-    public class Http_InvalidProtocolVersion : ApplicationException
+    }
+    public class NoContent : HttpException
     {
-        public Http_InvalidProtocolVersion(string message, string version) : base(message + "非法的HTTP协议版本: " + version) { }
+        public NoContent() { }
+        public NoContent(string message) : base(message) { }
+        public NoContent(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
+
+    }
+    public class NotFound : HttpException
+    {
+        public NotFound() { }
+        public NotFound(string message) : base(message) { }
+        public NotFound(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
+
+    }
+    public class MethodNotAllowed : HttpException
+    {
+        public MethodNotAllowed() { }
+        public MethodNotAllowed(string message) : base(message) { }
+        public MethodNotAllowed(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
+
+    }
+    public class BadRequest : HttpException
+    {
+        public BadRequest() { }
+        public BadRequest(string message) : base(message) { }
+        public BadRequest(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
+
+    }
+    public class HTTPVersionNotSupported : HttpException
+    {
+        public HTTPVersionNotSupported() { }
+        public HTTPVersionNotSupported(string message) : base(message) { }
+        public HTTPVersionNotSupported(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
 
     }
 }
