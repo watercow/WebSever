@@ -99,7 +99,7 @@ namespace WebServer.HttpServer
             {
                 if (thisLine.Length == 0) { break; }
                 
-                string pattern = @"^(?<headerName>(\w+-?\w+)+):\s(?<headerValue>[^,\s]*)";
+                string pattern = @"^(?<headerName>(\w+-?\w+)+):\s(?<headerValue>[^,\s]*)";  //Header value处排除了','号匹配，这样只会选择第一个属性
                 Match header = Regex.Match(thisLine, pattern);
                 if (header.Success== false)
                 {

@@ -27,14 +27,13 @@ namespace WebServer.HttpServer
             if (request.Header.ContainsKey("Accept-Encoding"))
             {
                 //encoding = ?
+                response.Header.Add("Content-Encoding", request.Header["Accept-Encoding"]);
             }
             switch (encoding)
             {
                 case "gzip":
-                    handle.base_path = HttpServer.SITE_PATH;
-                    response.Content = handle.Handler(request, "gzip");
-                    response.Header.Add("Content-Type", "text/html");
-                    response.Header.Add("Content-Encoding", "gzip");
+                    handle.Handler(response, request);
+                    //response.Header.Add("Content-Type", "text/html");
                     break;
             }
             return response;

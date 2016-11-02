@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -10,15 +11,28 @@ namespace WebServer.HttpServer
 {
     public class FileHandler
     {
-        public string base_path { set; get; }
 
-        public byte[] Handler(HttpRequest request, string encoding)
+        public void Handler(HttpResponse response, HttpRequest request)
         {
             string resourceUri = request.Uri;
             
-            resourceUri = this.base_path + resourceUri.Replace('/', '\\');
+            if(request.Uri == "/")
+            {
+                resourceUri = request.Uri + "home.html";
+            }
+            resourceUri = HttpServer.SITE_PATH + resourceUri.Replace('/', '\\');
             
             byte[] buffer = File.ReadAllBytes(resourceUri);
+
+            string pattern = @".[^.\/:*?<>|]*$";
+            string extension = Regex.Match(resourceUri, pattern).Value;
+            response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(extension));
+
+            string encoding = "identity";
+            if (response.Header.ContainsKey("Content-Encoding"))
+            {
+                encoding = response.Header["Content-Encoding"];
+            }
 
             switch (encoding)
             {
@@ -27,13 +41,15 @@ namespace WebServer.HttpServer
                     GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
                     gzip.Write(buffer, 0, buffer.Length);
                     gzip.Close();
-                    return ms.ToArray();
+                    response.Content =  ms.ToArray();
+                    break;
                 case "identity":
-                    return buffer;
-
+                    response.Content = buffer;
+                    break;
+                default:
+                    response.Content = buffer;
+                    break;
             }
-
-            return buffer;
         }
     }
 
