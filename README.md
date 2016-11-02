@@ -1,5 +1,5 @@
 # WebSever
-## 第一阶段：基本功能
+## 第一阶段：基本功能HttpServer
 ### 1.HTTPServer.cs
     1.1 设置务务器端监听端口：HttpServer(int set_port,IPAddress set_addr)
     1.2 配置服务器站点根目录: SITE_PATH [全局static变量]
@@ -19,7 +19,7 @@
     4.3 文件MIME字典：_mappings<string, string>
 ### 5.HttpException.cs
     异常处理
-    基类HttpException
+    基类:HttpException
     子类:
     1. WrongProtocolVersion
     2. NoContent
