@@ -18,10 +18,10 @@ namespace WebServer.HttpServer
         public static int SERVER_PORT { set; get; }
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
+        public static int SERVER_MAX_THREADS { set; get; }
         #endregion
 
         public TcpListener Listener;
-
 
         //设定监听端口/主机地址
         /// <summary>
@@ -41,6 +41,8 @@ namespace WebServer.HttpServer
         {
             this.Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
             this.Listener.Start();
+
+            ThreadPool.SetMaxThreads(20, 50);
 
             #if CONSOLE_APP
                 Console.WriteLine("开始Tcp监听");

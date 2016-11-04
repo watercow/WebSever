@@ -18,7 +18,7 @@ namespace WebServer.HttpServer
             
             if(request.Uri == "/")
             {
-                resourceUri = request.Uri + "home.html";
+                resourceUri = request.Uri + "index.html";
             }
             resourceUri = HttpServer.SITE_PATH + resourceUri.Replace('/', '\\');
             
