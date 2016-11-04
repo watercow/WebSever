@@ -56,4 +56,18 @@ namespace WebServer.HttpServer.HttpException
         public HTTPVersionNotSupported(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
 
     }
+    public class IOInterupted : HttpException
+    {
+        public IOInterupted() { }
+        public IOInterupted(string message) : base(message) { }
+        public IOInterupted(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
+
+    }
+    public class NullReference : HttpException
+    {
+        public NullReference() { }
+        public NullReference(string message) : base(message) { }
+        public NullReference(string message, Exception InnerExcepton) : base(message, InnerExcepton) { }
+
+    }
 }

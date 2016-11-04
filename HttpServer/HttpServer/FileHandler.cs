@@ -12,7 +12,7 @@ namespace WebServer.HttpServer
     public class FileHandler
     {
 
-        public void Handler(HttpResponse response, HttpRequest request)
+        public void GetHandler(HttpResponse response, HttpRequest request)
         {
             string resourceUri = request.Uri;
             
@@ -51,6 +51,46 @@ namespace WebServer.HttpServer
                     break;
             }
         }
+
+        public void PostHandler(HttpResponse response, HttpRequest request)
+        {
+            string resourceUri = request.Uri;
+
+            if (request.Uri == "/")
+            {
+                resourceUri = request.Uri + "home.html";
+            }
+            resourceUri = HttpServer.SITE_PATH + resourceUri.Replace('/', '\\');
+
+            byte[] buffer = File.ReadAllBytes(resourceUri);
+
+            string pattern = @".[^.\/:*?<>|]*$";
+            string extension = Regex.Match(resourceUri, pattern).Value;
+            response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(extension));
+
+            string encoding = "identity";
+            if (response.Header.ContainsKey("Content-Encoding"))
+            {
+                encoding = response.Header["Content-Encoding"];
+            }
+
+            switch (encoding)
+            {
+                case "gzip":
+                    MemoryStream ms = new MemoryStream();
+                    GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
+                    gzip.Write(buffer, 0, buffer.Length);
+                    gzip.Close();
+                    response.Content = ms.ToArray();
+                    break;
+                case "identity":
+                    response.Content = buffer;
+                    break;
+                default:
+                    response.Content = buffer;
+                    break;
+            }
+        }
     }
 
     public class QuickMimeTypeMapper
@@ -77,7 +117,7 @@ namespace WebServer.HttpServer
 
         private static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
 
-        #region Big fucking freaking list of mime types
+        #region Big freaking list of mime types
 
         // combination of values from Windows 7 Registry and 
         // from C:\Windows\System32\inetsrv\config\applicationHost.config

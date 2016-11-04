@@ -28,11 +28,20 @@ namespace WebServer.HttpServer
                 //处理Http request并生成响应头
                 HttpResponse response = GetResponse(request);
                 //将响应报文response写入outoutStream中
-                WriteResponse(outputStream, response);
+                try
+                {
+                    WriteResponse(outputStream, response);
+                }
+                catch (HttpException.IOInterupted ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    client.Close();
+                }
+                //2016.11.3 19:33 add try-catch for IOInterupt
                 outputStream.Flush();
 
                 outputStream.Close();
-                outputStream = null;
+                outputStream = null;       
 
                 inputStream.Close();
                 inputStream = null;
@@ -138,6 +147,14 @@ namespace WebServer.HttpServer
                         HttpMethodHandler.GetMethodHandler(request, response);
                         break;
                     case "POST":
+                        HttpMethodHandler.PostMethodHandler(request, response);
+                        break;
+                    case "OPTIONS":
+                        HttpMethodHandler.OptionsMethodHandler(request, response);
+                        break;
+                    //case "PUT":
+                    //    HttpMethodHandler.PutMethodHandler(request, response);
+                    //    break;
                     default:
                         break;
                 }
@@ -162,8 +179,25 @@ namespace WebServer.HttpServer
             string headerLine = responseLine + string.Join("\r\n", response.Header.Select(x => string.Format("{0}: {1}", x.Key, x.Value))) + "\r\n\r\n";
             byte[] buffer = Encoding.Default.GetBytes(headerLine);
             outputStream.Write(buffer, 0, buffer.Length);
-            outputStream.Write(response.Content, 0, response.Content.Length);
+            //if(response.Content != null)//增加trycatch避免response.Content为空时Write函数等待的错误----------16.11.2 20：39
+            //{
+            //    outputStream.Write(response.Content, 0, response.Content.Length);
+            //}
+            if (response != null)
+            {
+                try
+                {
+                    outputStream.Write(response.Content, 0, response.Content.Length);
+                }
+                catch (HttpException.NullReference ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                //2016.11.3 19:52 add try-catch for NullReference
+            }
+
         }
+            
 
         private static string Readline(Stream stream)
         {
