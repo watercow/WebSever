@@ -8,10 +8,11 @@ using System.IO;
 using System.Net.Sockets;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace WebServer.HttpServer
 {
-    public class HttpServer
+    public class HttpServer:INotifyPropertyChanged
     {
         #region GlobalVariables
         public static string PROTOCOL_VERSION { set; get; }
@@ -22,6 +23,7 @@ namespace WebServer.HttpServer
         #endregion
 
         public TcpListener Listener;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         //设定监听端口/主机地址
         /// <summary>
