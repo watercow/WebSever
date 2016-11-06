@@ -14,14 +14,15 @@ namespace Demo
         static void Main(string[] args)
         {
             HttpServer test = new HttpServer(80, IPAddress.Any);
-            HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+            HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources\\Sites";
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
+            HttpServer.CERT_PATH = "..\\..\\..\\HttpServer\\Resources\\server.cer";
 
             Console.WriteLine(
-                "Web Server 工作在 本地: {0}端口",
+                "Web Server 工作在 本地: 443端口",
                 HttpServer.SERVER_PORT);
 
-            test.Start();
+            test.StartSSL();
         }
     }
 }

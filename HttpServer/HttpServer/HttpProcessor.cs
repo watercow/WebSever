@@ -9,6 +9,9 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text.RegularExpressions;
 using WebServer.HttpServer;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebServer.HttpServer
 {
@@ -20,22 +23,27 @@ namespace WebServer.HttpServer
         {
             TcpClient client = (TcpClient)oclient;
             Stream inputStream = client.GetStream();
-            Stream outputStream = client.GetStream();
+            //Stream outputStream = client.GetStream();
+
+            SslStream sslStream = new SslStream(inputStream);
+
             try
             {
+                sslStream.AuthenticateAsServer(HttpServer.SERVER_CERT, false, SslProtocols.Tls, true);
+                
                 //读取请求行
-                HttpRequest request = GetRequest(inputStream);
+                HttpRequest request = GetRequest(sslStream);
                 //处理Http request并生成响应头
                 HttpResponse response = GetResponse(request);
                 //将响应报文response写入outoutStream中
-                WriteResponse(outputStream, response);
-                outputStream.Flush();
+                WriteResponse(sslStream, response);
+                sslStream.Flush();
 
-                outputStream.Close();
-                outputStream = null;
+                sslStream.Close();
+                //outputStream = null;
 
-                inputStream.Close();
-                inputStream = null;
+                //inputStream.Close();
+                //inputStream = null;
 
                 #region CONSOLE
 #if CONSOLE_APP
@@ -56,8 +64,6 @@ namespace WebServer.HttpServer
 #endif
                 #endregion
 
-                //断开连接
-                client.Close();
             }
             #region Http Exception Handler
             catch (HttpException.HttpException ex)
@@ -79,7 +85,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>400 Bad Request</title></head><body><h1>400 Bad Request</h1><p>HTTP ERROR 400</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 403:
                         response.Version = "HTTP/1.1";
@@ -92,7 +98,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>403 Forbidden</title></head><body><h1>403 Forbidden</h1><p>HTTP ERROR 403</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 404:
                         response.Version = "HTTP/1.1";
@@ -105,7 +111,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p>The requested URL was not found on this server.</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 405:
                         response.Version = "HTTP/1.1";
@@ -118,7 +124,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>405 Method Not Allowed</title></head><body><h1>405 Method Not Allowed</h1><p>HTTP ERROR 405</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 411:
                         response.Version = "HTTP/1.1";
@@ -131,7 +137,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>411 Length Required</title></head><body><h1>411 Length Required</h1><p>HTTP ERROR 411</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 500:
                         response.Version = "HTTP/1.1";
@@ -144,7 +150,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>500 Internal Server Error</title></head><body><h1>500 Internal Server Error</h1><p>HTTP ERROR 500</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 501:
                         response.Version = "HTTP/1.1";
@@ -157,7 +163,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>501 Not Implemented</title></head><body><h1>501 Not Implemented</h1><p>HTTP ERROR 501</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 503:
                         response.Version = "HTTP/1.1";
@@ -170,7 +176,7 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>503 Service Unavailable</title></head><body><h1>503 Service Unavailable</h1><p>HTTP ERROR 503</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     case 505:
                         response.Version = "HTTP/1.1";
@@ -183,11 +189,31 @@ namespace WebServer.HttpServer
                         Html_Content = "<html><head><title>505 HTTP Version not supported</title></head><body><h1>505 HTTP Version not supported</h1><p>HTTP ERROR 505</p></body></html>";
                         response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
                         response.Header.Add("Content-Length", response.Content.Length.ToString());
-                        WriteResponse(outputStream, response);
+                        WriteResponse(sslStream, response);
                         break;
                     default:
                         break;
                 }
+                client.Close();
+            }
+            #endregion
+            #region HttpsException
+            catch (AuthenticationException ex)
+            {
+                Console.WriteLine("Exception: {0}", ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner exception: {0}", ex.InnerException.Message);
+                }
+                Console.WriteLine("Authentication failed - closing the connection.");
+                sslStream.Close();
+                client.Close();
+                return;
+            }
+            finally
+            {
+                //断开连接                
+                sslStream.Close();
                 client.Close();
             }
             #endregion
@@ -270,9 +296,9 @@ namespace WebServer.HttpServer
                         break;
                 }
             }
-            catch (Exception ex)
+            catch (HttpException.HttpException ex)
             {
-                Console.WriteLine(ex.Message);
+                throw new HttpException.HttpException(ex.Message, ex.status);
             }
 
             response.Version = request.Version;

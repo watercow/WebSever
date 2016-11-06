@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebServer.HttpServer
 {
@@ -19,9 +20,12 @@ namespace WebServer.HttpServer
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static int SERVER_MAX_THREADS { set; get; }
+        public static string CERT_PATH { set; get; }
+        public static X509Certificate SERVER_CERT;
         #endregion
 
-        public TcpListener Listener;
+        private TcpListener HttpListener;
+        private TcpListener HttpsListener;
 
         //设定监听端口/主机地址
         /// <summary>
@@ -37,20 +41,51 @@ namespace WebServer.HttpServer
         /// <summary>
         /// 启动Http服务器对象
         /// </summary>
-        public void Start()
+        //public void Start()
+        //{
+        //    this.HttpListener = new TcpListener(IPAddress.Any, SERVER_PORT);
+        //    this.HttpListener.Start();
+
+        //    ThreadPool.SetMaxThreads(20, 50);
+
+        //    #if CONSOLE_APP
+        //        Console.WriteLine("开始Http监听");
+        //    #endif
+
+        //    while (true)
+        //    {
+        //        TcpClient new_client = this.HttpListener.AcceptTcpClient();
+
+        //        IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
+                
+        //        Thread thread = new Thread(HttpProcessor.ClientHandler);
+
+        //        #if CONSOLE_APP
+        //        Console.WriteLine("--------------------------------");
+        //        Console.WriteLine(
+        //            "收到Tcp连接请求 {0}: {1}",
+        //            clientIP.Address,
+        //            clientIP.Port);
+        //        Console.WriteLine(
+        //            "开始请求处理");
+        //        #endif
+
+        //        thread.Start(new_client);
+        //    }
+        //}
+
+        public void StartSSL()
         {
-            this.Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
-            this.Listener.Start();
+            this.HttpsListener = new TcpListener(IPAddress.Any, 443);
+            this.HttpsListener.Start();
+            SERVER_CERT = X509Certificate2.CreateFromCertFile(HttpServer.CERT_PATH);
 
-            ThreadPool.SetMaxThreads(20, 50);
-
-            #if CONSOLE_APP
-                Console.WriteLine("开始Tcp监听");
-            #endif
-
+#if CONSOLE_APP
+            Console.WriteLine("开始Https监听");
+#endif
             while (true)
             {
-                TcpClient new_client = this.Listener.AcceptTcpClient();
+                TcpClient new_client = this.HttpsListener.AcceptTcpClient();
 
                 IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
                 

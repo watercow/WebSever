@@ -21,8 +21,16 @@ namespace WebServer.HttpServer
                 resourceUri = request.Uri + "index.html";
             }
             resourceUri = HttpServer.SITE_PATH + resourceUri.Replace('/', '\\');
-            
-            byte[] buffer = File.ReadAllBytes(resourceUri);
+
+            byte[] buffer;
+            try
+            {
+                buffer = File.ReadAllBytes(resourceUri);
+            }
+            catch
+            {
+                throw new HttpException.HttpException("404 Not found.", 404);
+            }
 
             string pattern = @".[^.\/:*?<>|]*$";
             string extension = Regex.Match(resourceUri, pattern).Value;
