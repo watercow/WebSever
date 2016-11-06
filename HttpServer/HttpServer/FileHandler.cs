@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using WebServer.HttpServer.HttpException;
 
 namespace WebServer.HttpServer
 {

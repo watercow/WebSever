@@ -65,7 +65,6 @@ namespace WebServer.HttpServer
         public static HttpResponse OptionsMethodHandler(HttpRequest request, HttpResponse response)
         {
             FileHandler handle = new FileHandler();
-            string encoding = "gzip";
             string Support_Method = "GET/POST/PUT/DELETE/OPTIONS";
             response.Header.Add("Support-Method", Support_Method);
             return response;

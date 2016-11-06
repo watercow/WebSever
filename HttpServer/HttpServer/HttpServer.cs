@@ -15,14 +15,46 @@ namespace WebServer.HttpServer
     public class HttpServer:INotifyPropertyChanged
     {
         #region GlobalVariables
-        public static string PROTOCOL_VERSION { set; get; }
+        public static string PROTOCOL_VERSION { set ; get;}
         public static int SERVER_PORT { set; get; }
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static int SERVER_MAX_THREADS { set; get; }
+
+        private static Dictionary<int, HttpProcessor> proc_recode { set; get; }
+        public Dictionary<int, HttpProcessor> PROC_RECORD
+        {
+            get { return proc_recode; }
+            set
+            {
+                proc_recode = value;
+                if(this.PropertyChanged != null)
+                {
+                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("PROC_RECORD"));
+                }
+            }
+        }
+
+        private Dictionary<int, IPEndPoint> clientip_record { set; get; }
+        public  Dictionary<int, IPEndPoint> CLIENTIP_RECORD
+        {
+            get { return clientip_record; }
+            set
+            {
+                clientip_record = value;
+                if(this.PropertyChanged != null)
+                {
+                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CLIENTIP_RECORD"));
+                }
+            }
+        }
         #endregion
 
-        public TcpListener Listener;
+        //public TcpListener Listener;
+        //public TcpClient new_client;
+        //public Thread thread;
+        public bool Flag = true;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         //设定监听端口/主机地址
@@ -41,22 +73,27 @@ namespace WebServer.HttpServer
         /// </summary>
         public void Start()
         {
-            this.Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
-            this.Listener.Start();
+            Flag = true;
+            TcpListener Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
+            Listener.Start();
 
-            ThreadPool.SetMaxThreads(20, 50);
+            //ThreadPool.SetMaxThreads(20, 50);
 
             #if CONSOLE_APP
                 Console.WriteLine("开始Tcp监听");
             #endif
-
-            while (true)
+            
+            for (int i = 1;Flag==true;i++)
             {
-                TcpClient new_client = this.Listener.AcceptTcpClient();
-
+                TcpClient new_client = Listener.AcceptTcpClient();
                 IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
-                
-                Thread thread = new Thread(HttpProcessor.ClientHandler);
+                HttpProcessor proc = new HttpProcessor(new_client);
+
+                this.proc_recode.Add(i, proc);
+                this.clientip_record.Add(i, clientIP);
+
+                Thread thread = new Thread(proc.ClientHandler);
+                //Thread thread = new Thread(HttpProcessor.ClientHandler);
 
                 #if CONSOLE_APP
                 Console.WriteLine("--------------------------------");
@@ -67,9 +104,18 @@ namespace WebServer.HttpServer
                 Console.WriteLine(
                     "开始请求处理");
                 #endif
-
-                thread.Start(new_client);
+                thread.Start();
             }
+
+            Flag = true;
+            Listener.Stop(); 
         }
+
+        public void Close()
+        {
+            Flag = false;
+        }
+
+        
     }
 }
