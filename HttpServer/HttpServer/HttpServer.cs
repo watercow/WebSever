@@ -12,7 +12,7 @@ using System.ComponentModel;
 
 namespace WebServer.HttpServer
 {
-    public class HttpServer
+    public class HttpServer:INotifyPropertyChanged
     {
         #region GlobalVariables
         public static string PROTOCOL_VERSION { set ; get;}
@@ -20,12 +20,42 @@ namespace WebServer.HttpServer
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static int SERVER_MAX_THREADS { set; get; }
+
+        private static Dictionary<int, HttpProcessor> proc_recode { set; get; }
+        public Dictionary<int, HttpProcessor> PROC_RECORD
+        {
+            get { return proc_recode; }
+            set
+            {
+                proc_recode = value;
+                if(this.PropertyChanged != null)
+                {
+                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("PROC_RECORD"));
+                }
+            }
+        }
+
+        private Dictionary<int, IPEndPoint> clientip_record { set; get; }
+        public  Dictionary<int, IPEndPoint> CLIENTIP_RECORD
+        {
+            get { return clientip_record; }
+            set
+            {
+                clientip_record = value;
+                if(this.PropertyChanged != null)
+                {
+                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CLIENTIP_RECORD"));
+                }
+            }
+        }
         #endregion
 
         //public TcpListener Listener;
         //public TcpClient new_client;
         //public Thread thread;
         public bool Flag = true;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         //设定监听端口/主机地址
         /// <summary>
@@ -52,14 +82,16 @@ namespace WebServer.HttpServer
             #if CONSOLE_APP
                 Console.WriteLine("开始Tcp监听");
             #endif
-
-            while (Flag)
+            
+            for (int i = 1;Flag==true;i++)
             {
                 TcpClient new_client = Listener.AcceptTcpClient();
-
                 IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
-
                 HttpProcessor proc = new HttpProcessor(new_client);
+
+                this.proc_recode.Add(i, proc);
+                this.clientip_record.Add(i, clientIP);
+
                 Thread thread = new Thread(proc.ClientHandler);
                 //Thread thread = new Thread(HttpProcessor.ClientHandler);
 
@@ -72,7 +104,6 @@ namespace WebServer.HttpServer
                 Console.WriteLine(
                     "开始请求处理");
                 #endif
-
                 thread.Start();
             }
 
@@ -82,10 +113,6 @@ namespace WebServer.HttpServer
 
         public void Close()
         {
-            //this.Listener.EndAcceptTcpClient();    异步
-            //Listener.Stop();
-            //this.new_client.Close();
-            //this.thread.Abort();
             Flag = false;
         }
 

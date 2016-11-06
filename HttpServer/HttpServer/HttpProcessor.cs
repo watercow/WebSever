@@ -9,11 +9,15 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text.RegularExpressions;
 using WebServer.HttpServer;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace WebServer.HttpServer
 {
     public class HttpProcessor
     {
+        public HttpRequest request;
+        public HttpResponse response;
         public TcpClient client;
 
         #region Public Methods
@@ -30,9 +34,9 @@ namespace WebServer.HttpServer
             try
             {
                 //读取请求行
-                HttpRequest request = GetRequest(inputStream);
+                request = GetRequest(inputStream);
                 //处理Http request并生成响应头
-                HttpResponse response = GetResponse(request);
+                response = GetResponse(request);
                 //将响应报文response写入outoutStream中
                 WriteResponse(outputStream, response);
                 outputStream.Flush();
@@ -70,7 +74,7 @@ namespace WebServer.HttpServer
             {
                 DateTime dt = DateTime.Now;
                 string Date = dt.GetDateTimeFormats('r')[0].ToString();
-                HttpResponse response = new HttpResponse();
+                response = new HttpResponse();
                 String Html_Content;
                 switch (ex.status)
                 {
@@ -269,9 +273,6 @@ namespace WebServer.HttpServer
                     case "OPTIONS":
                         HttpMethodHandler.OptionsMethodHandler(request, response);
                         break;
-                    //case "PUT":
-                    //    HttpMethodHandler.PutMethodHandler(request, response);
-                    //    break;
                     default:
                         break;
                 }

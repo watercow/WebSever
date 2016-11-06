@@ -24,10 +24,15 @@ namespace WpfApplication3
     public partial class MainWindow : Window
     {
         public HttpServer httpserver = new HttpServer(80, IPAddress.Any);
-
         public MainWindow()
         {
             InitializeComponent();
+
+            Binding BD_proc = new Binding();
+            BD_proc.Source = httpserver.PROC_RECORD;
+
+            Binding BD_clientIP = new Binding();
+            BD_clientIP.Source = httpserver.CLIENTIP_RECORD;
         }
 
         //将16进制转化为Argb的颜色表示
@@ -45,6 +50,7 @@ namespace WpfApplication3
             };
         }
 
+        //按钮Button设置信息
         public Button btn_Start;
         public Button btn_Stop;
         public bool Flag_Start = true;
@@ -59,8 +65,6 @@ namespace WpfApplication3
                 btn_Start = sender as Button;
                 HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
                 HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
-                Binding httpserverBD = new Binding();
-                httpserverBD.Source = httpserver;
                 Thread ServerThread = new Thread(httpserver.Start);
                 ServerThread.Start();
                 if (Flag_Start == true)
@@ -82,6 +86,7 @@ namespace WpfApplication3
 
         private void Button_Stop(object sender, RoutedEventArgs e)
         {
+            Flag_Button_double = false;
             btn_Stop = sender as Button;
             this.httpserver.Close();
             if (Flag_Stop == true)

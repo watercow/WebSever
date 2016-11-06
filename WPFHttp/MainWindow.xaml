@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApplication3"
+        xmlns:local2="clr-namespace:WebServer.HttpServer;assembly=HttpServer"
         mc:Ignorable="d"
         Title="MainWindow" Height="593.138" Width="1085.973" Icon="rooster.jpg" MinHeight="500" MinWidth="700">
     <Window.Resources>
@@ -49,7 +50,7 @@
                             <Grid>
                                 <StackPanel>
                                     <Label x:Name="label" Content="Remote Client"/>
-                                    <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" ItemsSource="{Binding Collection}">
+                                    <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Seq}" Header="Seq"/>
                                             <DataGridTextColumn Binding="{Binding IP}" Header="IP"/>
