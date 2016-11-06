@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 
-namespace WebServer.HttpServer
+namespace WebServer.
+HttpServer
 {
-    public class HttpRequest:INotifyPropertyChanged
+    public class HttpRequest : INotifyPropertyChanged
     {
         //public string Method { get; set}
         private string method;

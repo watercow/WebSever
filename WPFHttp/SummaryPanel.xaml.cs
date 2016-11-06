@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WebServer;
 
-namespace WpfApplication3
+namespace WebServer.App
 {
     /// <summary>
     /// SummaryPanel.xaml 的交互逻辑
@@ -24,7 +24,6 @@ namespace WpfApplication3
         public SummaryPanel()
         {
             InitializeComponent();
-            this.DataContext = ;
         }
     }
 }

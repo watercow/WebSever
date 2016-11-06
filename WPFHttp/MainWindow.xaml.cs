@@ -14,29 +14,125 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net;
-using WebServer.HttpServer;
 
-namespace WpfApplication3
+namespace WebServer.App
 {
+    using WebServer.HttpServer;
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow : Window
     {
-        public HttpServer httpserver = new HttpServer(80, IPAddress.Any);
+        public HttpServer httpserver;
+
         public MainWindow()
         {
+            httpserver = new HttpServer(80, IPAddress.Any);
+
             InitializeComponent();
 
-            Binding BD_proc = new Binding();
-            BD_proc.Source = httpserver.PROC_RECORD;
+            //var binding = new Binding
+            //{
+            //    Path = new PropertyPath("PROC_RECORD"),
+            //    Source = httpserver
+            //};
+            Binding test = new Binding
+            {
+                Source = httpserver,
+                Path = new PropertyPath("PROC_RECORD")
+            };
 
-            Binding BD_clientIP = new Binding();
-            BD_clientIP.Source = httpserver.CLIENTIP_RECORD;
+            
+
+
         }
 
+
+
+        private void start_server(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                this.btn_start_server.Background = new SolidColorBrush(Colors.Blue);
+                this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+                this.server_config.IsEnabled = false;
+
+                //Create the main server thread
+                Thread ServerThread = new Thread(httpserver.Start);
+                ServerThread.Name = "Main Server Thread";
+
+                //Set the default server properties
+                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+                HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
+                HttpServer.SERVER_THREAD = ServerThread;
+
+                ServerThread.Start();
+            }
+            else
+            {
+                MessageBox.Show("已经有正在运行的服务器例程");
+            }
+        }
+
+        private void stop_server(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == true)
+            {
+                this.server_config.IsEnabled = true;
+                this.btn_start_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+                this.btn_stop_server.Background = new SolidColorBrush(Colors.Blue);
+
+                this.httpserver.Close();
+            }
+            else
+            {
+                MessageBox.Show("服务器例程已停止");
+            }
+        }
+
+        private void save_config(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                HttpServer.SERVER_PORT = Convert.ToInt16(this.tbx_server_port.Text);
+                HttpServer.SITE_PATH = this.tbx_site_path.Text;
+                HttpServer.SERVER_MAX_THREADS = Convert.ToInt16(this.tbx_thread_max.Text);
+                MessageBox.Show(
+                    "服务器端口: " + HttpServer.SERVER_PORT + "\n" +
+                    "站点路径: " + HttpServer.SITE_PATH + "\n" +
+                    "最大线程数: " + HttpServer.SERVER_MAX_THREADS,
+                    "修改的服务器配置"
+                    );
+            }
+            else
+            {
+                MessageBox.Show("服务器运行中");
+            }
+        }
+
+        private void reset_config(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                HttpServer.SERVER_PORT = 80;
+                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+                HttpServer.SERVER_MAX_THREADS = 30;
+                MessageBox.Show(
+                    "服务器端口: " + HttpServer.SERVER_PORT + "\n" +
+                    "站点路径: " + HttpServer.SITE_PATH + "\n" +
+                    "最大线程数: " + HttpServer.SERVER_MAX_THREADS,
+                    "重置的服务器配置"
+                    );
+            }
+            else
+            {
+                MessageBox.Show("服务器运行中");
+            }
+        }
+
+
         //将16进制转化为Argb的颜色表示
-        public Color ToColor(string colorName)
+        private Color ToColor(string colorName)
         {
             if (colorName.StartsWith("#"))
                 colorName = colorName.Replace("#", string.Empty);
@@ -49,58 +145,5 @@ namespace WpfApplication3
                 B = Convert.ToByte((v >> 0) & 255)
             };
         }
-
-        //按钮Button设置信息
-        public Button btn_Start;
-        public Button btn_Stop;
-        public bool Flag_Start = true;
-        public bool Flag_Stop = false;
-        public bool Flag_Button_double = false;//当多次点击开始时进行的判断
-
-        private void Button_Start(object sender, RoutedEventArgs e)
-        {
-            if (Flag_Button_double == false)
-            {
-                Flag_Button_double = true;
-                btn_Start = sender as Button;
-                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
-                HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
-                Thread ServerThread = new Thread(httpserver.Start);
-                ServerThread.Start();
-                if (Flag_Start == true)
-                {
-                    btn_Start.Background = new SolidColorBrush(Colors.Blue);
-                    Flag_Start = false;
-                }
-                else
-                {
-                    btn_Start.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
-                    Flag_Start = true;
-                }
-            }
-            else
-            {
-
-            }
-        }
-
-        private void Button_Stop(object sender, RoutedEventArgs e)
-        {
-            Flag_Button_double = false;
-            btn_Stop = sender as Button;
-            this.httpserver.Close();
-            if (Flag_Stop == true)
-            {
-                btn_Stop.Background = new SolidColorBrush(Colors.Blue);
-                Flag_Stop = false;
-            }
-            else
-            {
-                btn_Stop.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
-                Flag_Stop = true;
-            }
-        }
-
-        
     }
 }

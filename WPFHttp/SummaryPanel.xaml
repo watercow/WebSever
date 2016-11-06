@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="WpfApplication3.SummaryPanel"
+﻿<UserControl x:Class="WebServer.App.SummaryPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:WpfApplication3"
+             xmlns:local="clr-namespace:WebServer.App"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200">
     <Grid Background="#FF727272">
