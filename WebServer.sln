@@ -5,12 +5,12 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer", "HttpServer\WebServer.csproj", "{AE616952-648D-4850-9AE3-9D0DFFF5F6A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{C292A607-6673-42A8-ACBF-60514B12148B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer.Console", "Demo\WebServer.Console.csproj", "{C292A607-6673-42A8-ACBF-60514B12148B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AE616952-648D-4850-9AE3-9D0DFFF5F6A9} = {AE616952-648D-4850-9AE3-9D0DFFF5F6A9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplication3", "WPFHttp\WpfApplication3.csproj", "{E764472C-A02F-4A37-96B8-7759D13FAB69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer.App", "WPFHttp\WebServer.App.csproj", "{E764472C-A02F-4A37-96B8-7759D13FAB69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,7 +23,6 @@ Global
 		{AE616952-648D-4850-9AE3-9D0DFFF5F6A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE616952-648D-4850-9AE3-9D0DFFF5F6A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C292A607-6673-42A8-ACBF-60514B12148B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C292A607-6673-42A8-ACBF-60514B12148B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C292A607-6673-42A8-ACBF-60514B12148B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C292A607-6673-42A8-ACBF-60514B12148B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E764472C-A02F-4A37-96B8-7759D13FAB69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

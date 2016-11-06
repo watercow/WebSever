@@ -14,11 +14,17 @@ namespace WebServer.HttpServer
 {
     public class HttpProcessor
     {
+        public TcpClient client;
+
         #region Public Methods
-        //处理客户端请求
-        public static void ClientHandler(object oclient)    //Thread实例使用object对象
+        public HttpProcessor(TcpClient client)
         {
-            TcpClient client = (TcpClient)oclient;
+            this.client = client;
+        }
+
+        //处理客户端请求
+        public void ClientHandler()    //Thread实例使用object对象
+        {
             Stream inputStream = client.GetStream();
             Stream outputStream = client.GetStream();
             try
@@ -269,6 +275,14 @@ namespace WebServer.HttpServer
                     default:
                         break;
                 }
+            }
+            catch (HttpException.HttpException ex)
+            {
+                throw new HttpException.HttpException(ex.Message, ex.status);
+            }
+            catch (FileNotFoundException )
+            {
+                throw new HttpException.HttpException("404 Not Found", 404);
             }
             catch (Exception ex)
             {

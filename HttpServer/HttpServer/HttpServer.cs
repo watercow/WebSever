@@ -12,18 +12,20 @@ using System.ComponentModel;
 
 namespace WebServer.HttpServer
 {
-    public class HttpServer:INotifyPropertyChanged
+    public class HttpServer
     {
         #region GlobalVariables
-        public static string PROTOCOL_VERSION { set; get; }
+        public static string PROTOCOL_VERSION { set ; get;}
         public static int SERVER_PORT { set; get; }
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static int SERVER_MAX_THREADS { set; get; }
         #endregion
 
-        public TcpListener Listener;
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public TcpListener Listener;
+        //public TcpClient new_client;
+        //public Thread thread;
+        public bool Flag = true;
 
         //设定监听端口/主机地址
         /// <summary>
@@ -41,22 +43,25 @@ namespace WebServer.HttpServer
         /// </summary>
         public void Start()
         {
-            this.Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
-            this.Listener.Start();
+            Flag = true;
+            TcpListener Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
+            Listener.Start();
 
-            ThreadPool.SetMaxThreads(20, 50);
+            //ThreadPool.SetMaxThreads(20, 50);
 
             #if CONSOLE_APP
                 Console.WriteLine("开始Tcp监听");
             #endif
 
-            while (true)
+            while (Flag)
             {
-                TcpClient new_client = this.Listener.AcceptTcpClient();
+                TcpClient new_client = Listener.AcceptTcpClient();
 
                 IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
-                
-                Thread thread = new Thread(HttpProcessor.ClientHandler);
+
+                HttpProcessor proc = new HttpProcessor(new_client);
+                Thread thread = new Thread(proc.ClientHandler);
+                //Thread thread = new Thread(HttpProcessor.ClientHandler);
 
                 #if CONSOLE_APP
                 Console.WriteLine("--------------------------------");
@@ -68,8 +73,22 @@ namespace WebServer.HttpServer
                     "开始请求处理");
                 #endif
 
-                thread.Start(new_client);
+                thread.Start();
             }
+
+            Flag = true;
+            Listener.Stop(); 
         }
+
+        public void Close()
+        {
+            //this.Listener.EndAcceptTcpClient();    异步
+            //Listener.Stop();
+            //this.new_client.Close();
+            //this.thread.Abort();
+            Flag = false;
+        }
+
+        
     }
 }
