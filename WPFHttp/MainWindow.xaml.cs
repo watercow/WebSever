@@ -24,27 +24,17 @@ namespace WebServer.App
     public partial class MainWindow : Window
     {
         public HttpServer httpserver;
+        public List<string> Header_BD;
 
         public MainWindow()
         {
             httpserver = new HttpServer(80, IPAddress.Any);
 
+            //用来保存request.Header字典里的Value
+            Header_BD = new List<string>();
+
             InitializeComponent();
-
-            //var binding = new Binding
-            //{
-            //    Path = new PropertyPath("PROC_RECORD"),
-            //    Source = httpserver
-            //};
-            Binding test = new Binding
-            {
-                Source = httpserver,
-                Path = new PropertyPath("PROC_RECORD")
-            };
-
-            
-
-
+           
         }
 
 
@@ -71,6 +61,14 @@ namespace WebServer.App
             else
             {
                 MessageBox.Show("已经有正在运行的服务器例程");
+                this.textbox_Method.DataContext = httpserver.PROC_RECORD[0].request;
+                foreach (KeyValuePair<string, string> item in httpserver.PROC_RECORD[0].request.Header)
+                {
+                    Header_BD.Add(item.Value);
+                }
+                this.textbox_Uri.DataContext = httpserver.PROC_RECORD[0].request;
+                this.textbox_Version.DataContext = httpserver.PROC_RECORD[0].request;
+                this.textbox_Header.Text = Header_BD[0];
             }
         }
 

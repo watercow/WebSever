@@ -10,7 +10,6 @@ HttpServer
 {
     public class HttpRequest : INotifyPropertyChanged
     {
-        //public string Method { get; set}
         private string method;
         public string Method
         {
@@ -24,9 +23,36 @@ HttpServer
                 }
             }
         }
-        public string Uri { get; set; }
+
+        private string uri;
+        public string Uri
+        {
+            get { return uri; }
+            set
+            {
+                uri = value;
+                if(this.PropertyChanged != null)
+                {
+                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Uri"));
+                }
+            }
+        }
+
         public string Version { get; set; }
-        public string Path { get; set; }
+
+        private string path;
+        public string Path
+        {
+            get { return path; }
+            set
+            {
+                path = value;
+                if(this.PropertyChanged != null)
+                {
+                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Path"));
+                }
+            }
+        }
 
         public Dictionary<string, string> Header { get; set; }
 

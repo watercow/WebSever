@@ -27,18 +27,19 @@ namespace WebServer.HttpServer
         public static Thread SERVER_THREAD { set; get; }
         public static bool SERVER_STATUS { set; get; }
 
-        public Dictionary<int, HttpProcessor> PROC_RECORD
+        private List<HttpProcessor> proc_record;
+        public List<HttpProcessor> PROC_RECORD
         {
             get
             {
-                return PROC_RECORD;
+                return this.proc_record;
             }
             set
             {
-                PROC_RECORD = value;
+                this.proc_record = value;
                 if (PropertyChanged != null)
                 {
-                    PropertyChanged(
+                    PropertyChanged.Invoke(
                         this,
                         new PropertyChangedEventArgs("PROC_RECORD")
                         );
@@ -47,7 +48,7 @@ namespace WebServer.HttpServer
         }
 
         #endregion
-                
+
         //设定监听端口/主机地址
         /// <summary>
         /// 实例化一个Http服务器对象
@@ -57,7 +58,8 @@ namespace WebServer.HttpServer
             HttpServer.SERVER_PORT = set_port;
             HttpServer.SITE_HOST = set_addr;
             SERVER_STATUS = false;
-            PROC_RECORD = new Dictionary<int, HttpProcessor>();
+            PROC_RECORD = new List<HttpProcessor>();
+            proc_record = new List<HttpProcessor>();
         }
 
         //监听Tcp连接请求
@@ -93,7 +95,7 @@ namespace WebServer.HttpServer
                 Thread thread = new Thread(new_proc.ClientHandler);
                 thread.Name = "HttpProc #" + i;
 
-                PROC_RECORD.Add(i, new_proc);
+                proc_record.Add(new_proc);
 
 #if CONSOLE_APP
                 Console.WriteLine("--------------------------------");

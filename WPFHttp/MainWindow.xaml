@@ -38,7 +38,10 @@
                             <Grid>
                                 <StackPanel>
                                     <Label x:Name="label" Content="Remote Client"/>
-                                    <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding}"/>
+                                    <TextBox x:Name="textbox_Method" Text="{Binding Path=Method}" Height="20"/>
+                                    <TextBox x:Name="textbox_Uri" Text="{Binding Path=Uri}" Height="20"/>
+                                    <TextBox x:Name="textbox_Version" Text="{Binding Path=Version}" Height="20"/>
+                                    <TextBox x:Name="textbox_Header"  Height="20"/>
                                 </StackPanel>
                             </Grid>
                             <Grid>
