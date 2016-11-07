@@ -61,14 +61,20 @@ namespace WebServer.App
             else
             {
                 MessageBox.Show("已经有正在运行的服务器例程");
-                this.textbox_Method.DataContext = httpserver.PROC_RECORD[0].request;
+                Header_BD.Add(httpserver.PROC_RECORD[0].request.Method);
+                Header_BD.Add(httpserver.PROC_RECORD[0].request.Uri);
+                Header_BD.Add(httpserver.PROC_RECORD[0].request.Version);
                 foreach (KeyValuePair<string, string> item in httpserver.PROC_RECORD[0].request.Header)
                 {
                     Header_BD.Add(item.Value);
                 }
-                this.textbox_Uri.DataContext = httpserver.PROC_RECORD[0].request;
-                this.textbox_Version.DataContext = httpserver.PROC_RECORD[0].request;
-                this.textbox_Header.Text = Header_BD[0];
+                this.textbox_Method.Text = Header_BD[0] + " http://" + Header_BD[3] + "/ "+Header_BD[2];
+                this.textbox_User_Agent.Text = "User-Agent: "+Header_BD[7];
+                this.textbox_Host.Text ="Host: "+Header_BD[3];
+                this.textbox_Accept.Text = "Accept: "+Header_BD[8];
+                this.textbox_Accept_Language.Text="Accept-Language: "+Header_BD[10];
+                this.textbox_Accept_Encoding.Text = "Accept_Encoding: "+Header_BD[9];
+                this.textbox_Connection.Text = "Connection: "+Header_BD[4];
             }
         }
 

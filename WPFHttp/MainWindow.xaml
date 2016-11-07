@@ -38,10 +38,13 @@
                             <Grid>
                                 <StackPanel>
                                     <Label x:Name="label" Content="Remote Client"/>
-                                    <TextBox x:Name="textbox_Method" Text="{Binding Path=Method}" Height="20"/>
-                                    <TextBox x:Name="textbox_Uri" Text="{Binding Path=Uri}" Height="20"/>
-                                    <TextBox x:Name="textbox_Version" Text="{Binding Path=Version}" Height="20"/>
-                                    <TextBox x:Name="textbox_Header"  Height="20"/>
+                                    <TextBox x:Name="textbox_Method"  Height="20" IsEnabled="False"/>
+                                    <TextBox x:Name="textbox_User_Agent"  Height="20" IsEnabled="False"/>
+                                    <TextBox x:Name="textbox_Host"  Height="20" IsEnabled="False"/>
+                                    <TextBox x:Name="textbox_Accept"  Height="20" IsEnabled="False"/>
+                                    <TextBox x:Name="textbox_Accept_Language"  Height="20" IsEnabled="False"/>
+                                    <TextBox x:Name="textbox_Accept_Encoding"  Height="20" IsEnabled="False"/>
+                                    <TextBox x:Name="textbox_Connection"  Height="20" IsEnabled="False"/>
                                 </StackPanel>
                             </Grid>
                             <Grid>
