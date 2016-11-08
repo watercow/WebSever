@@ -91,6 +91,8 @@ namespace WebServer.HttpServer
                 }
                 IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
                 HttpProcessor new_proc = new HttpProcessor(new_client);
+                new_proc.RemoteIP = ((IPEndPoint)new_client.Client.RemoteEndPoint).Address.ToString();
+                new_proc.RemotePort = ((IPEndPoint)new_client.Client.RemoteEndPoint).Port.ToString();
 
                 Thread thread = new Thread(new_proc.ClientHandler);
                 thread.Name = "HttpProc #" + i;

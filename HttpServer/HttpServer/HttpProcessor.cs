@@ -19,6 +19,8 @@ namespace WebServer.HttpServer
         public HttpRequest request;
         public HttpResponse response;
         public TcpClient client;
+        public string RemoteIP;
+        public string RemotePort;
 
         #region Public Methods
         public HttpProcessor(TcpClient client)
@@ -67,7 +69,6 @@ namespace WebServer.HttpServer
                 #endregion
 
                 //断开连接
-                client.Close();
             }
             #region Http Exception Handler
             catch (HttpException.HttpException ex)
@@ -198,9 +199,13 @@ namespace WebServer.HttpServer
                     default:
                         break;
                 }
-                client.Close();
             }
             #endregion
+            finally
+            {
+                client.Close();
+                ((IDisposable)client).Dispose();
+            }
         }
         #endregion
 
