@@ -21,20 +21,53 @@ namespace WebServer.App
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
+    
+    //用来作为datagrid绑定的类
+    public class DataGrid_BD
+    {
+        public int Id { get; set; }
+        public string IP { get; set; }
+        public string Method { get; set; }
+        public int Port { get; set; }
+        public string Status { get; set; }
+        public string URI { get; set; }
+        public string Version { get; set; }
+        public string Host { get; set; }
+        public string User_Agent { get; set; }
+        public string Accept { get; set; }
+        public string Accept_Encoding { get; set; }
+        public DataGrid_BD(int _id, string _ip, string _method, int _port, 
+                           string _status, string _uri, string _version, string _host,
+                           string _useragent, string _accept, string _acceptencoding)
+        {
+            Id = _id;
+            IP = _ip;
+            Method = _method;
+            Port = _port;
+            Status = _status;
+            URI = _uri;
+            Version = _version;
+            Host = _host;
+            User_Agent = _useragent;
+            Accept = _accept;
+            Accept_Encoding = _acceptencoding;
+        }
+    }
+
     public partial class MainWindow : Window
     {
         public HttpServer httpserver;
-        public List<string> Header_BD;
+
+        
 
         public MainWindow()
         {
             httpserver = new HttpServer(80, IPAddress.Any);
 
             //用来保存request.Header字典里的Value
-            Header_BD = new List<string>();
+            //Header_BD = new List<string>();
 
             InitializeComponent();
-           
         }
 
 
@@ -61,20 +94,6 @@ namespace WebServer.App
             else
             {
                 MessageBox.Show("已经有正在运行的服务器例程");
-                Header_BD.Add(httpserver.PROC_RECORD[0].request.Method);
-                Header_BD.Add(httpserver.PROC_RECORD[0].request.Uri);
-                Header_BD.Add(httpserver.PROC_RECORD[0].request.Version);
-                foreach (KeyValuePair<string, string> item in httpserver.PROC_RECORD[0].request.Header)
-                {
-                    Header_BD.Add(item.Value);
-                }
-                this.textbox_Method.Text = Header_BD[0] + " http://" + Header_BD[3] + "/ "+Header_BD[2];
-                this.textbox_User_Agent.Text = "User-Agent: "+Header_BD[7];
-                this.textbox_Host.Text ="Host: "+Header_BD[3];
-                this.textbox_Accept.Text = "Accept: "+Header_BD[8];
-                this.textbox_Accept_Language.Text="Accept-Language: "+Header_BD[10];
-                this.textbox_Accept_Encoding.Text = "Accept_Encoding: "+Header_BD[9];
-                this.textbox_Connection.Text = "Connection: "+Header_BD[4];
             }
         }
 
@@ -91,6 +110,31 @@ namespace WebServer.App
             else
             {
                 MessageBox.Show("服务器例程已停止");
+            }
+        }
+
+        private void show_connect(object sender, RoutedEventArgs e)
+        {
+            if (httpserver.PROC_RECORD.Count == 0)
+            {
+                MessageBox.Show("尚未有接入的浏览器");
+            }
+            else
+            {
+                int now_count = httpserver.PROC_RECORD.Count;
+                //作为绑定数据的类的实例----作为数组进行创建
+                DataGrid_BD[] datagrid_bd = new DataGrid_BD[now_count];
+                for(int j = 0; j < now_count; j++)
+                {
+                    datagrid_bd[j] = new DataGrid_BD(j, "127.0.0.1", httpserver.PROC_RECORD[j].request.Method, HttpServer.SERVER_PORT, 
+                                                    httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase,
+                                                    httpserver.PROC_RECORD[j].request.Uri, httpserver.PROC_RECORD[j].request.Version, "127.0.0.1", 
+                                                    "666",
+                                                    "666",
+                                                    "666");
+                }
+
+                dataGrid.ItemsSource = datagrid_bd;
             }
         }
 
