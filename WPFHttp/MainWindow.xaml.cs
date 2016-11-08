@@ -28,7 +28,7 @@ namespace WebServer.App
         public int Id { get; set; }
         public string IP { get; set; }
         public string Method { get; set; }
-        public int Port { get; set; }
+        public string Port { get; set; }
         public string Status { get; set; }
         public string URI { get; set; }
         public string Version { get; set; }
@@ -36,7 +36,13 @@ namespace WebServer.App
         public string User_Agent { get; set; }
         public string Accept { get; set; }
         public string Accept_Encoding { get; set; }
-        public DataGrid_BD(int _id, string _ip, string _method, int _port, 
+        public DataGrid_BD(int _id, string _ip, string _port)
+        {
+            Id = _id;
+            IP = _ip;
+            Port = _port;
+        }
+        public DataGrid_BD(int _id, string _ip, string _method, string _port, 
                            string _status, string _uri, string _version, string _host,
                            string _useragent, string _accept, string _acceptencoding)
         {
@@ -124,17 +130,36 @@ namespace WebServer.App
                 int now_count = httpserver.PROC_RECORD.Count;
                 //作为绑定数据的类的实例----作为数组进行创建
                 DataGrid_BD[] datagrid_bd = new DataGrid_BD[now_count];
-                for(int j = 0; j < now_count; j++)
+                for (int j = 0; j < now_count; j++)
                 {
-                    datagrid_bd[j] = new DataGrid_BD(j, "127.0.0.1", httpserver.PROC_RECORD[j].request.Method, HttpServer.SERVER_PORT, 
-                                                    httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase,
-                                                    httpserver.PROC_RECORD[j].request.Uri, httpserver.PROC_RECORD[j].request.Version, "127.0.0.1", 
-                                                    "666",
-                                                    "666",
-                                                    "666");
-                }
+                    datagrid_bd[j] = new DataGrid_BD(j + 1,
+                                                    httpserver.PROC_RECORD[j].RemoteIP,
+                                                    httpserver.PROC_RECORD[j].RemotePort);
+                    if (httpserver.PROC_RECORD[j].request == null || httpserver.PROC_RECORD[j].response == null)
+                    {
+                        datagrid_bd[j].Status = "N/A";
+                        datagrid_bd[j].Method = "N/A";
+                        datagrid_bd[j].URI = "N/A";
+                        datagrid_bd[j].Version = "N/A";
+                        datagrid_bd[j].Host = "N/A";
+                        datagrid_bd[j].User_Agent = "N/A";
+                        datagrid_bd[j].Accept = "N/A";
+                        datagrid_bd[j].Accept_Encoding = "N/A";
+                    }
+                    else
+                    {
+                        datagrid_bd[j].Status = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
+                        datagrid_bd[j].Method = httpserver.PROC_RECORD[j].request.Method;
+                        datagrid_bd[j].URI = httpserver.PROC_RECORD[j].request.Uri;
+                        datagrid_bd[j].Version = httpserver.PROC_RECORD[j].request.Version;
+                        datagrid_bd[j].Host = httpserver.PROC_RECORD[j].request.Header["Host"];
+                        datagrid_bd[j].User_Agent = httpserver.PROC_RECORD[j].request.Header["User-Agent"];
+                        datagrid_bd[j].Accept = httpserver.PROC_RECORD[j].request.Header["Accept"];
+                        datagrid_bd[j].Accept_Encoding = httpserver.PROC_RECORD[j].request.Header["Accept-Encoding"];
+                    }
 
-                dataGrid.ItemsSource = datagrid_bd;
+                    dataGrid.ItemsSource = datagrid_bd;
+                }
             }
         }
 
