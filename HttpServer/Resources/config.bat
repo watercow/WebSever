@@ -1,9 +1,3 @@
-
-set REDIRECT_STATUS=%1
-
-set GATEWAY_INTERFACE=%2
-set SCRIPT_FILENAME=%3
-set REQUEST_METHOD=%4
-
+@echo off
 
 C:\php\php-cgi.exe

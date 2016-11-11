@@ -7,10 +7,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Sockets;
 using System.Net;
-using System.Text.RegularExpressions;
 using WebServer.HttpServer;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace WebServer.HttpServer
 {
@@ -37,10 +38,91 @@ namespace WebServer.HttpServer
             {
                 //读取请求行
                 request = GetRequest(inputStream);
-                //处理Http request并生成响应头
-                response = GetResponse(request);
-                //将响应报文response写入outoutStream中
-                WriteResponse(outputStream, response);
+
+                #region Process CGI(PHP) Scripts
+                string pattern = @"^(?<uri>\S+\.php)(\?(?<form>\S*))*$";  //提取出CGI动态资源
+                Match header = Regex.Match(request.Uri, pattern);
+                if (header.Success == true)
+                {
+                    string uri = header.Result("${uri}");
+                    string php_uri = FileHandler.ParseUri(uri);
+                    switch (request.Method)
+                    {
+                        #region Process GET requests
+                        case "GET":
+                            {
+                                string form = header.Result("${form}");
+
+                                ProcessStartInfo pri = new ProcessStartInfo(HttpServer.SITE_PATH + @"\config.bat");
+                                pri.UseShellExecute = false;
+                                //pri.RedirectStandardInput = true;
+                                pri.RedirectStandardOutput = true;
+
+                                Environment.SetEnvironmentVariable("REDIRECT_STATUS", "true");
+                                Environment.SetEnvironmentVariable("GATEWAY_INTERFACE", "CGI/1.1");
+                                Environment.SetEnvironmentVariable("SCRIPT_FILENAME", php_uri);
+                                Environment.SetEnvironmentVariable("QUERY_STRING", form);
+                                Environment.SetEnvironmentVariable("REQUEST_METHOD", "GET");
+                                
+                                //pri.Arguments = @"true CGI\1.1 " + php_uri + @" """ + form +  @""" GET";
+                                Process handle = Process.Start(pri);
+                                System.IO.StreamReader myOutput = handle.StandardOutput;
+
+                                response = new HttpResponse();
+                                response.Version = request.Version;
+                                response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
+                                response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
+                                response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                                byte[] buffer = Encoding.UTF8.GetBytes((response.GetResponse() + myOutput.ReadToEnd()));
+                                outputStream.Write(buffer, 0, buffer.Length);
+                                break;
+                            }
+                        #endregion
+                        #region POST requests
+                        case "POST":
+                            {
+                                ProcessStartInfo pri = new ProcessStartInfo(HttpServer.SITE_PATH + @"\config.bat");
+                                pri.UseShellExecute = false;
+                                pri.RedirectStandardInput = true;
+                                pri.RedirectStandardOutput = true;
+
+                                Environment.SetEnvironmentVariable("REDIRECT_STATUS", "true");
+                                Environment.SetEnvironmentVariable("GATEWAY_INTERFACE", "CGI/1.1");
+                                Environment.SetEnvironmentVariable("SCRIPT_FILENAME", php_uri);
+                                Environment.SetEnvironmentVariable("REQUEST_METHOD", "POST");
+                                Environment.SetEnvironmentVariable("CONTENT_LENGTH", request.Header["Content-Length"]);
+                                Environment.SetEnvironmentVariable("CONTENT_TYPE", request.Header["Content-Type"]);
+
+
+                                Process handle = Process.Start(pri);
+                                System.IO.StreamWriter myInput = handle.StandardInput;
+                                System.IO.StreamReader myOutput = handle.StandardOutput;
+                                
+                                myInput.Write(Encoding.Default.GetBytes(request.Content));
+                                myInput.Flush();
+                                myInput.Close();
+
+                                response = new HttpResponse();
+                                response.Version = request.Version;
+                                response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
+                                response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
+                                response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                                byte[]  buffer = Encoding.UTF8.GetBytes((response.GetResponse() + myOutput.ReadToEnd()));
+                                outputStream.Write(buffer, 0, buffer.Length); 
+
+                                break;
+                            }
+                            #endregion
+                    }
+                }
+                #endregion
+                else
+                {
+                    //处理Http request并生成响应头
+                    response = GetResponse(request);
+                    //将响应报文response写入outoutStream中
+                    WriteResponse(outputStream, response);
+                }
                 outputStream.Flush();
 
                 outputStream.Close();
@@ -248,7 +330,7 @@ namespace WebServer.HttpServer
             if (request.Header.ContainsKey("Content-Length"))
             {
                 int totalBytes = Convert.ToInt32(request.Header["Content-Length"]);
-                int bytesRead = totalBytes;
+                int bytesRead = 0;
                 byte[] buffer = new byte[totalBytes];
 
                 while (bytesRead < totalBytes)
@@ -296,8 +378,6 @@ namespace WebServer.HttpServer
             }
 
             response.Version = request.Version;
-
-
             response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
             response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
 

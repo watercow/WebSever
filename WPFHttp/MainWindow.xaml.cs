@@ -91,7 +91,7 @@ namespace WebServer.App
                 ServerThread.Name = "Main Server Thread";
 
                 //Set the default server properties
-                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+                HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
                 HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
                 HttpServer.SERVER_THREAD = ServerThread;
 
