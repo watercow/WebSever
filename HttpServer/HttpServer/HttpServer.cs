@@ -9,6 +9,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Net.NetworkInformation;
+using Microsoft.Win32;
 
 namespace WebServer.HttpServer
 {
@@ -20,6 +22,7 @@ namespace WebServer.HttpServer
 
         public static string PROTOCOL_VERSION { set; get; }
         public static int SERVER_PORT { set; get; }
+        public static string SERVER_ADDR { set; get; }
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static int SERVER_MAX_THREADS { set; get; }
@@ -69,7 +72,7 @@ namespace WebServer.HttpServer
         public void Start()
         {
             SERVER_STATUS = true;
-            Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
+            Listener = new TcpListener(IPAddress.Parse(SERVER_ADDR), SERVER_PORT);
             Listener.Start();
 
             //ThreadPool.SetMaxThreads(20, 50);
@@ -122,6 +125,38 @@ namespace WebServer.HttpServer
             Listener.Stop();
             SERVER_STATUS = false;
         }
-        
+        public static List<string> GetIP()
+        {
+            NetworkInterface[] NetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+            List<string> listIPAddr = new List<string>();
+            foreach (NetworkInterface NetworkIntf in NetworkInterfaces)
+            {
+                string fRegistryKey = "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}\\" + NetworkIntf.Id + "\\Connection";
+                RegistryKey rk = Registry.LocalMachine.OpenSubKey(fRegistryKey, false);
+                if (rk != null)
+                {
+                    if (NetworkIntf.NetworkInterfaceType == NetworkInterfaceType.Ethernet || NetworkIntf.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                    {
+                        string fPnpInstanceID = rk.GetValue("PnpInstanceID", "").ToString();
+                        int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
+                        if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI")
+                        {
+                            IPInterfaceProperties IPInterfaceProperties = NetworkIntf.GetIPProperties();
+
+                            UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = IPInterfaceProperties.UnicastAddresses;
+
+                            foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection)
+                            {
+                                if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork)
+                                {
+                                    listIPAddr.Add(UnicastIPAddressInformation.Address.ToString());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return listIPAddr;
+        }
     }
 }

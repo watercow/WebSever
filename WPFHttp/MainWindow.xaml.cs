@@ -67,7 +67,7 @@ namespace WebServer.App
         
 
         public MainWindow()
-        {
+        {  
             httpserver = new HttpServer(80, IPAddress.Any);
 
             //用来保存request.Header字典里的Value
@@ -76,8 +76,23 @@ namespace WebServer.App
             InitializeComponent();
         }
 
+        private void select_ip(object sender, RoutedEventArgs e)
+        {
+            List<string> listIP = WebServer.HttpServer.HttpServer.GetIP();
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                this.listip.Text = listIP[0];
+                this.listip1.Text = listIP[1];
 
-
+            }
+        }
+        private void save_ip(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                HttpServer.SERVER_ADDR = this.listip2.Text;
+            }
+        }
         private void start_server(object sender, RoutedEventArgs e)
         {
             if (HttpServer.SERVER_STATUS == false)
