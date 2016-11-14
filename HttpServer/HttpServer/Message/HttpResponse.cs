@@ -29,10 +29,17 @@ namespace WebServer.HttpServer
         public string ReasonPhrase { get; set; }
         public Dictionary<string, string> Header { get; set; }
         public byte[] Content { get; set; }
-        
+
         public HttpResponse()
         {
             Header = new Dictionary<string, string>();
+        }
+
+        public string GetResponse()
+        {
+            string responseLine = string.Format("{0} {1} {2}\r\n", this.Version, this.StatusCode, this.ReasonPhrase);
+            string headerLine = string.Join("\r\n", this.Header.Select(x => string.Format("{0}: {1}", x.Key, x.Value))) + "\r\n";
+            return responseLine + headerLine;
         }
     }
 }

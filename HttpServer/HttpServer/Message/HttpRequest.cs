@@ -59,5 +59,12 @@ HttpServer
         public string Content { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public string GetRequest()
+        {
+            string responseLine = string.Format("{0} {1} {2}\r\n", this.Version, this.Uri, this.Method);
+            string headerLine = string.Join("\r\n", this.Header.Select(x => string.Format("{0}: {1}", x.Key, x.Value))) + "\r\n";
+            return responseLine + headerLine;
+        }
     }
 }

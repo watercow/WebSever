@@ -12,16 +12,20 @@ namespace WebServer.HttpServer
 {
     public class FileHandler
     {
+        public static string ParseUri(string uriIn)
+        {
+            string uriOut = uriIn;
+            if (uriIn == "/")
+            {
+                uriOut = uriOut + "index.html";
+            }
+            uriOut = HttpServer.SITE_PATH + uriOut.Replace('/', '\\');
+            return uriOut;
+        }
 
         public void GetHandler(HttpResponse response, HttpRequest request)
         {
-            string resourceUri = request.Uri;
-            
-            if(request.Uri == "/")
-            {
-                resourceUri = request.Uri + "index.html";
-            }
-            resourceUri = HttpServer.SITE_PATH + resourceUri.Replace('/', '\\');
+            string resourceUri = ParseUri(request.Uri);
             
             byte[] buffer = File.ReadAllBytes(resourceUri);
 

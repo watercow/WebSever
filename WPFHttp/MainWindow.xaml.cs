@@ -106,7 +106,10 @@ namespace WebServer.App
                     Thread ServerThread = new Thread(httpserver.Start);
                     ServerThread.Name = "Main Server Thread";
 
-                    HttpServer.SERVER_THREAD = ServerThread;
+                //Set the default server properties
+                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+                HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
+                HttpServer.SERVER_THREAD = ServerThread;
 
                     ServerThread.Start();
                 }
