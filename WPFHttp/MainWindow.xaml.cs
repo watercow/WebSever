@@ -35,7 +35,7 @@ namespace WebServer.App
         public string Host { get; set; }
         public string User_Agent { get; set; }
         public string Accept { get; set; }
-        public string Accept_Encoding { get; set; }
+        public string Accept_Language { get; set; }
         public DataGrid_BD(int _id, string _ip, string _port)
         {
             Id = _id;
@@ -44,7 +44,7 @@ namespace WebServer.App
         }
         public DataGrid_BD(int _id, string _ip, string _method, string _port, 
                            string _status, string _uri, string _version, string _host,
-                           string _useragent, string _accept, string _acceptencoding)
+                           string _useragent, string _accept, string _acceptlanguage)
         {
             Id = _id;
             IP = _ip;
@@ -56,7 +56,16 @@ namespace WebServer.App
             Host = _host;
             User_Agent = _useragent;
             Accept = _accept;
-            Accept_Encoding = _acceptencoding;
+            Accept_Language = _acceptlanguage;
+        }
+    }
+
+    public class DataGrid_IP
+    {
+        public string IPDisplay { set; get; }
+        public DataGrid_IP(string ipdisplay)
+        {
+            IPDisplay = ipdisplay;
         }
     }
 
@@ -69,10 +78,6 @@ namespace WebServer.App
         public MainWindow()
         {
             httpserver = new HttpServer(80, IPAddress.Any);
-
-            //用来保存request.Header字典里的Value
-            //Header_BD = new List<string>();
-
             InitializeComponent();
         }
 
@@ -112,10 +117,29 @@ namespace WebServer.App
                 this.btn_stop_server.Background = new SolidColorBrush(Colors.Blue);
 
                 this.httpserver.Close();
+               // this.connection_monitor.Children.Remove();
             }
             else
             {
                 MessageBox.Show("服务器例程已停止");
+            }
+        }
+
+        private void ShowServerIP(object sender, RoutedEventArgs e)
+        {
+            DataGrid_IP[] datagrid_ip = new DataGrid_IP[HttpServer.networkCardIPs.Count];
+            for (int i = 0; i < HttpServer.networkCardIPs.Count; i++)
+            {
+                datagrid_ip[i] = new DataGrid_IP(HttpServer.networkCardIPs[i]);
+            }
+            IP_Display.ItemsSource = datagrid_ip;
+        }
+
+        private void SaveIP_Click(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                HttpServer.SERVER_ADDR = this.ChosenIP.Text;
             }
         }
 
@@ -129,7 +153,10 @@ namespace WebServer.App
             {
                 int now_count = httpserver.PROC_RECORD.Count;
                 //作为绑定数据的类的实例----作为数组进行创建
+
                 DataGrid_BD[] datagrid_bd = new DataGrid_BD[now_count];
+                
+
                 for (int j = 0; j < now_count; j++)
                 {
                     datagrid_bd[j] = new DataGrid_BD(j + 1,
@@ -137,6 +164,7 @@ namespace WebServer.App
                                                     httpserver.PROC_RECORD[j].RemotePort);
                     if (httpserver.PROC_RECORD[j].request == null || httpserver.PROC_RECORD[j].response == null)
                     {
+                        //列表信息显示
                         datagrid_bd[j].Status = "N/A";
                         datagrid_bd[j].Method = "N/A";
                         datagrid_bd[j].URI = "N/A";
@@ -144,10 +172,11 @@ namespace WebServer.App
                         datagrid_bd[j].Host = "N/A";
                         datagrid_bd[j].User_Agent = "N/A";
                         datagrid_bd[j].Accept = "N/A";
-                        datagrid_bd[j].Accept_Encoding = "N/A";
+                        datagrid_bd[j].Accept_Language = "N/A";
                     }
                     else
                     {
+                        //列表信息显示
                         datagrid_bd[j].Status = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
                         datagrid_bd[j].Method = httpserver.PROC_RECORD[j].request.Method;
                         datagrid_bd[j].URI = httpserver.PROC_RECORD[j].request.Uri;
@@ -155,9 +184,16 @@ namespace WebServer.App
                         datagrid_bd[j].Host = httpserver.PROC_RECORD[j].request.Header["Host"];
                         datagrid_bd[j].User_Agent = httpserver.PROC_RECORD[j].request.Header["User-Agent"];
                         datagrid_bd[j].Accept = httpserver.PROC_RECORD[j].request.Header["Accept"];
-                        datagrid_bd[j].Accept_Encoding = httpserver.PROC_RECORD[j].request.Header["Accept-Encoding"];
-                    }
+                        datagrid_bd[j].Accept_Language = httpserver.PROC_RECORD[j].request.Header["Accept-Language"];
 
+                        //窗口信息显示
+                        SummaryPanel moreinfo = new SummaryPanel();
+                        moreinfo.RemoteIP.Text = httpserver.PROC_RECORD[j].RemoteIP+":"+httpserver.PROC_RECORD[j].RemotePort;
+                        moreinfo.RemoteMethod.Text = httpserver.PROC_RECORD[j].request.Method;
+                        moreinfo.RemoteVersion.Text = httpserver.PROC_RECORD[j].request.Version;
+                        moreinfo.RemoteStatue.Text = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
+                        this.connection_monitor.Children.Add(moreinfo);
+                    }
                     dataGrid.ItemsSource = datagrid_bd;
                 }
             }
