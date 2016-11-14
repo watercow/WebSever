@@ -23,7 +23,6 @@ namespace WebServer.HttpServer
         public static string PROTOCOL_VERSION { set; get; }
         public static string SERVER_ADDR { set; get; }
         public static int SERVER_PORT { set; get; }
-        public static string SERVER_ADDR { set; get; }
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static int SERVER_MAX_THREADS { set; get; }

@@ -32,21 +32,6 @@
             <Button x:Name="btn_show_connect" Click="show_connect" Content="刷新连接" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="75" Margin="0" Background="#FF747474" Foreground="White"/>
         </ToolBar>
         <TabControl x:Name="tabControl" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" HorizontalContentAlignment="Center" Grid.Row="2">
-            <TabItem Header="本地IP选择">
-                <Grid Background="#FFE5E5E5">
-                    <StackPanel x:Name="ip_select">
-                        <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
-                            <Button x:Name="button5" Click="select_ip" Content="显示本地ip" Margin="30,0,0,0"/>
-                            <TextBox x:Name="listip" TextWrapping="Wrap" Text="80" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
-                                <TextBox x:Name="listip1" TextWrapping="Wrap" Text="80" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
-                            </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
-                            <Button x:Name="button6" Click="save_ip" Content="保存ip" Margin="30,0,0,0"/>
-                            <TextBox x:Name="listip2" TextWrapping="Wrap" Text="80" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </TabItem>
             <TabItem Header="连接监控">
                 <Grid Background="#FFE5E5E5">
                     <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" VerticalScrollBarVisibility="Auto">
