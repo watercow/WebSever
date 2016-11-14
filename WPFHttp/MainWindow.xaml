@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebServer.App"
-        xmlns:local2="clr-namespace:WebServer.HttpServer;assembly=HttpServer"
+        xmlns:local2="clr-namespace:WebServer.HttpServer;assembly=WebServer"
         mc:Ignorable="d"
         Title="MainWindow" Height="593.138" Width="1085.973" Icon="rooster.jpg" MinHeight="500" MinWidth="700">
     <Window.Resources>
@@ -44,10 +44,11 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Binding="{Binding Id}" Header="Seq" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                                 <DataGridTextColumn Binding="{Binding IP}" Header="IP" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Method}" Header="Method" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                                 <DataGridTextColumn Binding="{Binding Port}" Header="Port" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Status}" Header="Status" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                                 <DataGridTextColumn Binding="{Binding Version}" Header="Version" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                                <DataGridTextColumn Binding="{Binding Method}" Header="Method" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                                <DataGridTextColumn Binding="{Binding Status}" Header="Status" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                                <DataGridTextColumn Binding="{Binding URI}" Header="Uri" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                                 <DataGridTextColumn Binding="{Binding Host}" Header="Host" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                                 <DataGridTextColumn Binding="{Binding User_Agent}" Header="User-Agent" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                                 <DataGridTextColumn Binding="{Binding Accept}" Header="Accept" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>

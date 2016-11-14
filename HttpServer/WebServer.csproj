@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpServer\Handlers\CgiHandler.cs" />
     <Compile Include="HttpServer\Handlers\FileHandler.cs" />
     <Compile Include="HttpServer\Exception\HttpException.cs" />
     <Compile Include="HttpServer\HttpProcessor.cs" />

@@ -81,9 +81,10 @@ namespace WebServer.App
         {
             //设置默认配置信息
             httpserver = new HttpServer(80, IPAddress.Any);
-            HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+            HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
             HttpServer.SERVER_MAX_THREADS = 10;
+            HttpServer.SITE_DEFAULT_PAGE = "index.html";
 
             InitializeComponent();
         }
@@ -105,12 +106,7 @@ namespace WebServer.App
                     //Create the main server thread
                     Thread ServerThread = new Thread(httpserver.Start);
                     ServerThread.Name = "Main Server Thread";
-
-                //Set the default server properties
-                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
-                HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
-                HttpServer.SERVER_THREAD = ServerThread;
-
+                    HttpServer.SERVER_THREAD = ServerThread;
                     ServerThread.Start();
                 }
                 else
@@ -227,7 +223,7 @@ namespace WebServer.App
                     datagrid_bd[j] = new DataGrid_BD(j + 1,
                                                     httpserver.PROC_RECORD[j].RemoteIP,
                                                     httpserver.PROC_RECORD[j].RemotePort);
-                    if (httpserver.PROC_RECORD[j].request == null || httpserver.PROC_RECORD[j].response == null)
+                    if (httpserver.PROC_RECORD[j].request == null)
                     {
                         //列表信息显示
                         datagrid_bd[j].Status = "N/A";
@@ -245,6 +241,7 @@ namespace WebServer.App
                         datagrid_bd[j].Status = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
                         datagrid_bd[j].Method = httpserver.PROC_RECORD[j].request.Method;
                         datagrid_bd[j].Version = httpserver.PROC_RECORD[j].request.Version;
+                        datagrid_bd[j].URI = httpserver.PROC_RECORD[j].request.Uri;
                         datagrid_bd[j].Host = httpserver.PROC_RECORD[j].request.Header["Host"];
                         datagrid_bd[j].User_Agent = httpserver.PROC_RECORD[j].request.Header["User-Agent"];
                         datagrid_bd[j].Accept = httpserver.PROC_RECORD[j].request.Header["Accept"];
@@ -257,13 +254,21 @@ namespace WebServer.App
                         moreinfo.RemoteVersion.Text = httpserver.PROC_RECORD[j].request.Version;
                         moreinfo.RemoteStatue.Text = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
 
-                        moreinfo.txb_useragent.Text = "User-Agent:  " + httpserver.PROC_RECORD[j].request.Header["User-Agent"];
-                        moreinfo.txb_uri.Text = "URI:  " + httpserver.PROC_RECORD[j].request.Uri;
-                        moreinfo.txb_accept.Text = "Accept:  " + httpserver.PROC_RECORD[j].request.Header["Accept"];
-                        moreinfo.txb_acceptlanguage.Text = "Accept-Language:  " + httpserver.PROC_RECORD[j].request.Header["Accept-Language"];
-                        moreinfo.txb_acceptencoding.Text = "Accept-Encoding:  " + httpserver.PROC_RECORD[j].request.Header["Accept-Encoding"];
-                        moreinfo.txb_connection.Text = "Connection:  " + httpserver.PROC_RECORD[j].response.Header["Connection"];
-                        moreinfo.txb_cachecontrol.Text = "Cache-control:  no-cache";
+                        //moreinfo.txb_useragent.Text = "User-Agent:  " + httpserver.PROC_RECORD[j].request.Header["User-Agent"];
+                        //moreinfo.txb_uri.Text = "URI:  " + httpserver.PROC_RECORD[j].request.Uri;
+                        //moreinfo.txb_accept.Text = "Accept:  " + httpserver.PROC_RECORD[j].request.Header["Accept"];
+                        //moreinfo.txb_acceptlanguage.Text = "Accept-Language:  " + httpserver.PROC_RECORD[j].request.Header["Accept-Language"];
+                        //moreinfo.txb_acceptencoding.Text = "Accept-Encoding:  " + httpserver.PROC_RECORD[j].request.Header["Accept-Encoding"];
+                        //moreinfo.txb_connection.Text = "Connection:  " + httpserver.PROC_RECORD[j].response.Header["Connection"];
+                        //moreinfo.txb_cachecontrol.Text = "Cache-control:  no-cache";
+                        foreach (KeyValuePair<string, string> item in httpserver.PROC_RECORD[j].request.Header)
+                        {
+                            TextBlock txb = new TextBlock();
+                            txb.Text = item.Key + ": " + item.Value;
+                            txb.FontSize = 10;
+
+                            moreinfo.Headers.Children.Add(txb);
+                        }
                         this.connection_monitor.Children.Add(moreinfo);
                     }
                     dataGrid.ItemsSource = datagrid_bd;

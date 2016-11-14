@@ -17,7 +17,7 @@ namespace WebServer.HttpServer
             string uriOut = uriIn;
             if (uriIn == "/")
             {
-                uriOut = uriOut + "index.html";
+                uriOut = uriOut + HttpServer.SITE_DEFAULT_PAGE;
             }
             uriOut = HttpServer.SITE_PATH + uriOut.Replace('/', '\\');
             return uriOut;
