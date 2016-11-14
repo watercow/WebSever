@@ -37,6 +37,8 @@ namespace WebServer.HttpServer
             {
                 //读取请求行
                 request = GetRequest(inputStream);
+                if (request == null)
+                    throw new HttpException.HttpException("500 internal server error", 500);
                 //处理Http request并生成响应头
                 response = GetResponse(request);
                 //将响应报文response写入outoutStream中
@@ -221,6 +223,8 @@ namespace WebServer.HttpServer
                 throw new HttpException.HttpException("400 bad request", 400);
             }
             request.Method = tokens[0];
+            if (request.Method == "HEAD" || request.Method == "PUT" || request.Method == "DELETE")
+                throw new HttpException.HttpException("501 not implemented", 501);
             request.Uri = tokens[1];
             request.Version = tokens[2];
 

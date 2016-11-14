@@ -34,23 +34,26 @@ namespace WebServer.HttpServer
                 {
                     // 区分 PnpInstanceID  
                     // 如果前面有 PCI 就是本机的真实网卡 
-                    string fPnpInstanceID = rk.GetValue("PnpInstanceID", "").ToString();
-                    int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
-                    if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI" || true)
+                    if (adapter.NetworkInterfaceType == NetworkInterfaceType.Ethernet || adapter.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
                     {
-                        IPInterfaceProperties fIPInterfaceProperties = adapter.GetIPProperties();
-                        UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = fIPInterfaceProperties.UnicastAddresses;
-                        foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection)
+                        string fPnpInstanceID = rk.GetValue("PnpInstanceID", "").ToString();
+                        int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
+                        if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI" || true)
                         {
-                            if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork)
+                            IPInterfaceProperties fIPInterfaceProperties = adapter.GetIPProperties();
+                            UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = fIPInterfaceProperties.UnicastAddresses;
+                            foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection)
                             {
-                                networkCardIPs.Add(
-                                    new interfaceDescriptor
-                                    {
-                                        interfaceIP = UnicastIPAddressInformation.Address.ToString(),
-                                        interfaceMAC = adapter.GetPhysicalAddress().ToString(),
-                                        interfaceName = adapter.Name
-                                    }); //Ip 地址
+                                if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork)
+                                {
+                                    networkCardIPs.Add(
+                                        new interfaceDescriptor
+                                        {
+                                            interfaceIP = UnicastIPAddressInformation.Address.ToString(),
+                                            interfaceMAC = adapter.GetPhysicalAddress().ToString(),
+                                            interfaceName = adapter.Name
+                                        }); //Ip 地址
+                                }
                             }
                         }
                     }
