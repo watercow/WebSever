@@ -66,7 +66,7 @@
                                             <DataGridTextColumn Binding="{Binding Host}" Header="Host" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding User_Agent}" Header="User-Agent" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Accept}" Header="Accept" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                            <DataGridTextColumn Binding="{Binding Accept_Encoding}" Header="Accept-Encoding" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Accept_Language}" Header="Accept-Language" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </StackPanel>
@@ -75,15 +75,6 @@
                                 <StackPanel Margin="0,0,0,0.76">
                                     <Label x:Name="label1" Content="Ongoing Session"/>
                                     <WrapPanel x:Name="connection_monitor">
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
-                                        <local:SummaryPanel Height="200" Width="200" Margin="10"/>
                                     </WrapPanel>
                                 </StackPanel>
                             </Grid>
@@ -111,6 +102,28 @@
                             <Button x:Name="button1" Click="reset_config" Content="重置" Margin="90,0,0,0"/>
                         </StackPanel>
                     </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="本机IP" HorizontalAlignment="Left" Height="19" VerticalAlignment="Top" Width="59" Margin="-5,0,0,0">
+                <Grid Background="#FFE5E5E5">
+                    <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="0,26,0,0">
+                        <StackPanel>
+                            <Grid>
+                                <StackPanel>
+                                    <DataGrid x:Name="IP_Display" AutoGenerateColumns="False"  Margin="0,0,614,0">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding IPDisplay}" Header="IP" FontFamily="Consolas" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <TextBox x:Name="ChosenIP" HorizontalAlignment="Left" Height="25" Margin="461,26,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" />
+                    <Button x:Name="SaveIP" Content="保存" HorizontalAlignment="Left" Margin="581,26,0,0" VerticalAlignment="Top" Width="80" Height="25" Click="SaveIP_Click"/>
+                    <Label x:Name="label5" Content="本服务器可选IP" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="26"/>
+                    <Label x:Name="label6" Content="请选择服务器使用的IP(选好IP后才可点击开始按钮)" HorizontalAlignment="Left" Margin="460,-1,0,0" VerticalAlignment="Top" Width="457"/>
+                    <Button x:Name="button2" Content="显示本机IP" HorizontalAlignment="Left" Margin="124,0,0,0" VerticalAlignment="Top" Width="75" Height="26" Click="ShowServerIP"/>
                 </Grid>
             </TabItem>
             <TabItem Header="历史连接" Margin="0">

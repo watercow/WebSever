@@ -69,6 +69,7 @@
     <Compile Include="HttpServer\Message\HttpResponse.cs" />
     <Compile Include="HttpServer\HttpServer.cs" />
     <Compile Include="HttpServer\Method\HttpMethodHandler.cs" />
+    <Compile Include="HttpServer\ServerIP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
