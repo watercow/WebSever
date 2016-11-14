@@ -79,7 +79,7 @@ namespace WebServer.App
         
         public MainWindow()
         {
-            //Set the default server properties
+            //设置默认配置信息
             httpserver = new HttpServer(80, IPAddress.Any);
             HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
@@ -90,24 +90,32 @@ namespace WebServer.App
         
         private void start_server(object sender, RoutedEventArgs e)
         {
-            if (HttpServer.SERVER_STATUS == false)
+            if (this.tbx_server_ip.Text=="null")
             {
-                this.btn_start_server.Background = new SolidColorBrush(Colors.Blue);
-                this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
-                this.server_config.IsEnabled = false;
-
-                //Create the main server thread
-                Thread ServerThread = new Thread(httpserver.Start);
-                ServerThread.Name = "Main Server Thread";
-
-                HttpServer.SERVER_THREAD = ServerThread;
-
-                ServerThread.Start();
+                MessageBox.Show("请先配置IP");
             }
             else
             {
-                MessageBox.Show("已经有正在运行的服务器例程");
+                if (HttpServer.SERVER_STATUS == false)
+                {
+                    this.btn_start_server.Background = new SolidColorBrush(Colors.Blue);
+                    this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+                    this.server_config.IsEnabled = false;
+
+                    //Create the main server thread
+                    Thread ServerThread = new Thread(httpserver.Start);
+                    ServerThread.Name = "Main Server Thread";
+
+                    HttpServer.SERVER_THREAD = ServerThread;
+
+                    ServerThread.Start();
+                }
+                else
+                {
+                    MessageBox.Show("已经有正在运行的服务器例程");
+                }
             }
+            
         }
 
         private void stop_server(object sender, RoutedEventArgs e)
@@ -119,7 +127,6 @@ namespace WebServer.App
                 this.btn_stop_server.Background = new SolidColorBrush(Colors.Blue);
 
                 this.httpserver.Close();
-               // this.connection_monitor.Children.Remove();
             }
             else
             {
@@ -234,7 +241,6 @@ namespace WebServer.App
                         //列表信息显示
                         datagrid_bd[j].Status = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
                         datagrid_bd[j].Method = httpserver.PROC_RECORD[j].request.Method;
-                        datagrid_bd[j].URI = httpserver.PROC_RECORD[j].request.Uri;
                         datagrid_bd[j].Version = httpserver.PROC_RECORD[j].request.Version;
                         datagrid_bd[j].Host = httpserver.PROC_RECORD[j].request.Header["Host"];
                         datagrid_bd[j].User_Agent = httpserver.PROC_RECORD[j].request.Header["User-Agent"];
@@ -247,6 +253,14 @@ namespace WebServer.App
                         moreinfo.RemoteMethod.Text = httpserver.PROC_RECORD[j].request.Method;
                         moreinfo.RemoteVersion.Text = httpserver.PROC_RECORD[j].request.Version;
                         moreinfo.RemoteStatue.Text = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
+
+                        moreinfo.txb_useragent.Text = "User-Agent:  " + httpserver.PROC_RECORD[j].request.Header["User-Agent"];
+                        moreinfo.txb_uri.Text = "URI:  " + httpserver.PROC_RECORD[j].request.Uri;
+                        moreinfo.txb_accept.Text = "Accept:  " + httpserver.PROC_RECORD[j].request.Header["Accept"];
+                        moreinfo.txb_acceptlanguage.Text = "Accept-Language:  " + httpserver.PROC_RECORD[j].request.Header["Accept-Language"];
+                        moreinfo.txb_acceptencoding.Text = "Accept-Encoding:  " + httpserver.PROC_RECORD[j].request.Header["Accept-Encoding"];
+                        moreinfo.txb_connection.Text = "Connection:  " + httpserver.PROC_RECORD[j].response.Header["Connection"];
+                        moreinfo.txb_cachecontrol.Text = "Cache-control:  no-cache";
                         this.connection_monitor.Children.Add(moreinfo);
                     }
                     dataGrid.ItemsSource = datagrid_bd;

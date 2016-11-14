@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WebServer.App"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="200">
+             d:DesignHeight="200" d:DesignWidth="200"
+             MaxHeight="200" MaxWidth="200">
     <Grid Background="#FF727272" Margin="0,0,20,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
@@ -21,10 +22,13 @@
                 <TextBlock x:Name="RemoteMethod" TextWrapping="Wrap"  FontSize="10" UseLayoutRounding="True" Foreground="White" Opacity="0.8" Margin="0,0,5,0"/>
                 <TextBlock x:Name="RemoteStatue" TextWrapping="Wrap"  FontSize="10" UseLayoutRounding="True" Foreground="White" Opacity="0.8" Margin="0,0,5,0"/>
             </StackPanel>
-            <TextBlock x:Name="textBlock1_Copy1" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
-            <TextBlock x:Name="textBlock1_Copy2" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
-            <TextBlock x:Name="textBlock1_Copy3" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
-            <TextBlock x:Name="textBlock1_Copy4" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_useragent" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_uri" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_accept" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_acceptlanguage" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_acceptencoding" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_connection" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txb_cachecontrol" TextWrapping="Wrap"  FontSize="10" Foreground="#FFD6D6D6" Margin="0,0,0,5"/>
         </StackPanel>
 
     </Grid>

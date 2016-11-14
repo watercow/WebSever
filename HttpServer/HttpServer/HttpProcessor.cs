@@ -286,7 +286,7 @@ namespace WebServer.HttpServer
             {
                 throw new HttpException.HttpException(ex.Message, ex.status);
             }
-            catch (FileNotFoundException )
+            catch (FileNotFoundException)
             {
                 throw new HttpException.HttpException("404 Not Found", 404);
             }
