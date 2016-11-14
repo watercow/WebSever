@@ -63,7 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpServer\FileHandler.cs" />
-    <Compile Include="HttpServer\ResourceHandlers\cgiHandler.cs" />
     <Compile Include="HttpServer\Exception\HttpException.cs" />
     <Compile Include="HttpServer\HttpProcessor.cs" />
     <Compile Include="HttpServer\Message\HttpRequest.cs" />
@@ -76,7 +75,9 @@
     <None Include="App.config" />
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="HttpServer\ResourceHandlers\" />
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
       <Visible>False</Visible>
