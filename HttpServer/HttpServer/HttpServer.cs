@@ -18,7 +18,6 @@ namespace WebServer.HttpServer
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static List<string> networkCardIPs;
         public static string PROTOCOL_VERSION { set; get; }
         public static string SERVER_ADDR { set; get; }
         public static int SERVER_PORT { set; get; }
@@ -62,6 +61,7 @@ namespace WebServer.HttpServer
             SERVER_STATUS = false;
             PROC_RECORD = new List<HttpProcessor>();
             proc_record = new List<HttpProcessor>();
+            IPConfig.GetPhysicsNetworkCardIP();
         }
 
         //监听Tcp连接请求
@@ -74,7 +74,7 @@ namespace WebServer.HttpServer
             Listener = new TcpListener(IPAddress.Any, SERVER_PORT);
             Listener.Start();
 
-            //ThreadPool.SetMaxThreads(20, 50);
+            ThreadPool.SetMaxThreads(SERVER_MAX_THREADS, SERVER_MAX_THREADS);
 
 #if CONSOLE_APP
             Console.WriteLine("开始Tcp监听");

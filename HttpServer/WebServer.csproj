@@ -62,14 +62,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpServer\FileHandler.cs" />
+    <Compile Include="HttpServer\Handlers\FileHandler.cs" />
     <Compile Include="HttpServer\Exception\HttpException.cs" />
     <Compile Include="HttpServer\HttpProcessor.cs" />
     <Compile Include="HttpServer\Message\HttpRequest.cs" />
     <Compile Include="HttpServer\Message\HttpResponse.cs" />
     <Compile Include="HttpServer\HttpServer.cs" />
     <Compile Include="HttpServer\Method\HttpMethodHandler.cs" />
-    <Compile Include="HttpServer\ServerIP.cs" />
+    <Compile Include="HttpServer\Utility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

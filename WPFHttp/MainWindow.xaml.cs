@@ -63,26 +63,31 @@ namespace WebServer.App
     public class DataGrid_IP
     {
         public string IPDisplay { set; get; }
-        public DataGrid_IP(string ipdisplay)
+        public string MACDisplay { set; get; }
+        public string NameDisplay { set; get; }
+        public DataGrid_IP(string ipdisplay, string macdisplay, string namedisplay)
         {
             IPDisplay = ipdisplay;
+            MACDisplay = macdisplay;
+            NameDisplay = namedisplay;
         }
     }
 
     public partial class MainWindow : Window
     {
         public HttpServer httpserver;
-
         
-
         public MainWindow()
         {
+            //Set the default server properties
             httpserver = new HttpServer(80, IPAddress.Any);
+            HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+            HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
+            HttpServer.SERVER_MAX_THREADS = 10;
+
             InitializeComponent();
         }
-
-
-
+        
         private void start_server(object sender, RoutedEventArgs e)
         {
             if (HttpServer.SERVER_STATUS == false)
@@ -95,9 +100,6 @@ namespace WebServer.App
                 Thread ServerThread = new Thread(httpserver.Start);
                 ServerThread.Name = "Main Server Thread";
 
-                //Set the default server properties
-                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
-                HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
                 HttpServer.SERVER_THREAD = ServerThread;
 
                 ServerThread.Start();
@@ -124,22 +126,75 @@ namespace WebServer.App
                 MessageBox.Show("服务器例程已停止");
             }
         }
-
-        private void ShowServerIP(object sender, RoutedEventArgs e)
+        
+        private void show_server_config(object sender, RoutedEventArgs e)
         {
-            DataGrid_IP[] datagrid_ip = new DataGrid_IP[HttpServer.networkCardIPs.Count];
-            for (int i = 0; i < HttpServer.networkCardIPs.Count; i++)
+            DataGrid_IP[] datagrid_ip = new DataGrid_IP[IPConfig.networkCardIPs.Count];
+            for (int i = 0; i < IPConfig.networkCardIPs.Count; i++)
             {
-                datagrid_ip[i] = new DataGrid_IP(HttpServer.networkCardIPs[i]);
+                datagrid_ip[i] =
+                    new DataGrid_IP(
+                        IPConfig.networkCardIPs[i].interfaceIP,
+                        IPConfig.networkCardIPs[i].interfaceMAC,
+                        IPConfig.networkCardIPs[i].interfaceName);
             }
-            IP_Display.ItemsSource = datagrid_ip;
+            Interface_Display.ItemsSource = datagrid_ip;
+            this.tbx_server_port.Text = HttpServer.SERVER_PORT.ToString();
+            this.tbx_site_path.Text = HttpServer.SITE_PATH;
+            this.tbx_thread_max.Text = HttpServer.SERVER_MAX_THREADS.ToString();
         }
 
-        private void SaveIP_Click(object sender, RoutedEventArgs e)
+        private void SelectIP_Click(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.Interface_Display.SelectedIndex != -1)
+            {
+                this.tbx_server_port.Text = HttpServer.SERVER_PORT.ToString();
+                this.tbx_site_path.Text = HttpServer.SITE_PATH;
+                this.tbx_thread_max.Text = HttpServer.SERVER_MAX_THREADS.ToString();
+                this.tbx_server_ip.Text = IPConfig.networkCardIPs[this.Interface_Display.SelectedIndex].interfaceIP;
+            }
+        }
+
+        private void save_config(object sender, RoutedEventArgs e)
         {
             if (HttpServer.SERVER_STATUS == false)
             {
-                HttpServer.SERVER_ADDR = this.ChosenIP.Text;
+                HttpServer.SERVER_PORT = Convert.ToInt16(this.tbx_server_port.Text);
+                HttpServer.SITE_PATH = this.tbx_site_path.Text;
+                HttpServer.SERVER_MAX_THREADS = Convert.ToInt16(this.tbx_thread_max.Text);
+                HttpServer.SERVER_ADDR = this.tbx_server_ip.Text;
+                MessageBox.Show(
+                    "服务器地址: " + HttpServer.SERVER_ADDR + "\n" +
+                    "服务器端口: " + HttpServer.SERVER_PORT + "\n" +
+                    "站点路径: " + HttpServer.SITE_PATH + "\n" +
+                    "最大线程数: " + HttpServer.SERVER_MAX_THREADS,
+                    "修改的服务器配置"
+                    );
+            }
+            else
+            {
+                MessageBox.Show("服务器运行中");
+            }
+        }
+
+        private void reset_config(object sender, RoutedEventArgs e)
+        {
+            if (HttpServer.SERVER_STATUS == false)
+            {
+                HttpServer.SERVER_PORT = 80;
+                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
+                HttpServer.SERVER_MAX_THREADS = 10;
+                MessageBox.Show(
+                    "服务器地址: " + HttpServer.SERVER_ADDR + "\n" +
+                    "服务器端口: " + HttpServer.SERVER_PORT + "\n" +
+                    "站点路径: " + HttpServer.SITE_PATH + "\n" +
+                    "最大线程数: " + HttpServer.SERVER_MAX_THREADS,
+                    "重置的服务器配置"
+                    );
+            }
+            else
+            {
+                MessageBox.Show("服务器运行中");
             }
         }
 
@@ -155,7 +210,7 @@ namespace WebServer.App
                 //作为绑定数据的类的实例----作为数组进行创建
 
                 DataGrid_BD[] datagrid_bd = new DataGrid_BD[now_count];
-                
+
 
                 for (int j = 0; j < now_count; j++)
                 {
@@ -188,7 +243,7 @@ namespace WebServer.App
 
                         //窗口信息显示
                         SummaryPanel moreinfo = new SummaryPanel();
-                        moreinfo.RemoteIP.Text = httpserver.PROC_RECORD[j].RemoteIP+":"+httpserver.PROC_RECORD[j].RemotePort;
+                        moreinfo.RemoteIP.Text = httpserver.PROC_RECORD[j].RemoteIP + ":" + httpserver.PROC_RECORD[j].RemotePort;
                         moreinfo.RemoteMethod.Text = httpserver.PROC_RECORD[j].request.Method;
                         moreinfo.RemoteVersion.Text = httpserver.PROC_RECORD[j].request.Version;
                         moreinfo.RemoteStatue.Text = httpserver.PROC_RECORD[j].response.StatusCode + " " + httpserver.PROC_RECORD[j].response.ReasonPhrase;
@@ -196,46 +251,6 @@ namespace WebServer.App
                     }
                     dataGrid.ItemsSource = datagrid_bd;
                 }
-            }
-        }
-
-        private void save_config(object sender, RoutedEventArgs e)
-        {
-            if (HttpServer.SERVER_STATUS == false)
-            {
-                HttpServer.SERVER_PORT = Convert.ToInt16(this.tbx_server_port.Text);
-                HttpServer.SITE_PATH = this.tbx_site_path.Text;
-                HttpServer.SERVER_MAX_THREADS = Convert.ToInt16(this.tbx_thread_max.Text);
-                MessageBox.Show(
-                    "服务器端口: " + HttpServer.SERVER_PORT + "\n" +
-                    "站点路径: " + HttpServer.SITE_PATH + "\n" +
-                    "最大线程数: " + HttpServer.SERVER_MAX_THREADS,
-                    "修改的服务器配置"
-                    );
-            }
-            else
-            {
-                MessageBox.Show("服务器运行中");
-            }
-        }
-
-        private void reset_config(object sender, RoutedEventArgs e)
-        {
-            if (HttpServer.SERVER_STATUS == false)
-            {
-                HttpServer.SERVER_PORT = 80;
-                HttpServer.SITE_PATH = "..\\..\\..\\HttpServer\\Resources";
-                HttpServer.SERVER_MAX_THREADS = 30;
-                MessageBox.Show(
-                    "服务器端口: " + HttpServer.SERVER_PORT + "\n" +
-                    "站点路径: " + HttpServer.SITE_PATH + "\n" +
-                    "最大线程数: " + HttpServer.SERVER_MAX_THREADS,
-                    "重置的服务器配置"
-                    );
-            }
-            else
-            {
-                MessageBox.Show("服务器运行中");
             }
         }
 
@@ -254,5 +269,6 @@ namespace WebServer.App
                 B = Convert.ToByte((v >> 0) & 255)
             };
         }
+        
     }
 }

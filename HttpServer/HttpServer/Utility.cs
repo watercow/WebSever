@@ -10,10 +10,21 @@ using Microsoft.Win32;
 
 namespace WebServer.HttpServer
 {
-    public static class ServerIP
+    public class interfaceDescriptor
     {
-        public static IList<string> GetPhysicsNetworkCardIP(List<string> networkCardIPs)
+        public string interfaceIP;
+        public string interfaceMAC;
+        public string interfaceName;
+    }
+
+    public class IPConfig
+    {
+        public static List<interfaceDescriptor> networkCardIPs;
+       
+        public static IList<interfaceDescriptor> GetPhysicsNetworkCardIP()
         {
+            networkCardIPs = new List<interfaceDescriptor>();
+
             NetworkInterface[] fNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface adapter in fNetworkInterfaces)
             {
@@ -25,7 +36,7 @@ namespace WebServer.HttpServer
                     // 如果前面有 PCI 就是本机的真实网卡 
                     string fPnpInstanceID = rk.GetValue("PnpInstanceID", "").ToString();
                     int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
-                    if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI")
+                    if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI" || true)
                     {
                         IPInterfaceProperties fIPInterfaceProperties = adapter.GetIPProperties();
                         UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = fIPInterfaceProperties.UnicastAddresses;
@@ -33,16 +44,18 @@ namespace WebServer.HttpServer
                         {
                             if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork)
                             {
-                                networkCardIPs.Add(UnicastIPAddressInformation.Address.ToString()); //Ip 地址
+                                networkCardIPs.Add(
+                                    new interfaceDescriptor
+                                    {
+                                        interfaceIP = UnicastIPAddressInformation.Address.ToString(),
+                                        interfaceMAC = adapter.GetPhysicalAddress().ToString(),
+                                        interfaceName = adapter.Name
+                                    }); //Ip 地址
                             }
                         }
                     }
                 }
             }
-            //           foreach (string a in networkCardIPs)
-            //          {
-            //              IpCount++;
-            //          }
             return networkCardIPs;
         }
     }
