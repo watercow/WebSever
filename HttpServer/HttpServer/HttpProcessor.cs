@@ -11,6 +11,10 @@ using WebServer.HttpServer;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Text.RegularExpressions;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+
 
 namespace WebServer.HttpServer
 {
@@ -223,6 +227,209 @@ namespace WebServer.HttpServer
             }
             #endregion
             catch(Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+            finally
+            {
+                client.Close();
+                ((IDisposable)client).Dispose();
+            }
+        }
+
+        public void SSLClientHandler()    //Thread实例使用object对象
+
+        {
+            Stream RawStream = client.GetStream();
+            SslStream sslStream = new SslStream(RawStream);
+
+            try
+            {
+                sslStream.AuthenticateAsServer(HttpServer.SERVER_CERT, false, SslProtocols.Tls, true);
+
+                //读取请求行
+                request = GetRequest(sslStream);
+                if (request == null)
+                    throw new HttpException.HttpException("500 internal server error", 500);
+
+                #region Process CGI(PHP) Scripts
+                string pattern = @"^(?<uri>\S+\.php)(\?(?<form>\S*))*$";  //提取出CGI动态资源
+                Match header = Regex.Match(request.Uri, pattern);
+                if (header.Success == true)
+                {
+                    string uri = header.Result("${uri}");
+                    string form = header.Result("${form}");
+                    //生成php脚本路径
+                    //php解释器不支持..的相对路径
+                    string php_uri = FileHandler.ParseUri(uri);
+                    response = new HttpResponse();
+                    byte[] buffer = CgiHandler.PhpHandler(response, request, php_uri, form);
+                    sslStream.Write(buffer, 0, buffer.Length);
+                }
+                #endregion
+                else
+                {
+                    //处理Http request并生成响应头
+                    response = GetResponse(request);
+                    //将响应报文response写入outoutStream中
+                    WriteResponse(sslStream, response);
+                }
+                sslStream.Flush();
+                sslStream.Close();
+
+                #region CONSOLE
+#if CONSOLE_APP
+                Console.WriteLine("\n解析请求行...");
+                Console.WriteLine(
+                        "Method : {0} \nUri : {1} \nVer : {2} ",
+                        request.Method,
+                        request.Uri,
+                        request.Version
+                        );
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine("Following is the parsed headers:");
+                Console.WriteLine("--------------------------------");
+                foreach (KeyValuePair<string, string> item in request.Header)
+                {
+                    Console.WriteLine("{0}: {1}", item.Key, item.Value);
+                }
+#endif
+                #endregion
+
+                //断开连接
+            }
+            #region Http Exception Handler
+            catch (HttpException.HttpException ex)
+            {
+                DateTime dt = DateTime.Now;
+                string Date = dt.GetDateTimeFormats('r')[0].ToString();
+                response = new HttpResponse();
+                String Html_Content;
+                switch (ex.status)
+                {
+                    case 400:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "400";
+                        response.ReasonPhrase = "Bad Request";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>400 Bad Request</title></head><body><h1>400 Bad Request</h1><p>HTTP ERROR 400</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 403:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "403";
+                        response.ReasonPhrase = "Forbidden";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>403 Forbidden</title></head><body><h1>403 Forbidden</h1><p>HTTP ERROR 403</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 404:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "404";
+                        response.ReasonPhrase = "Not Found";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p>The requested URL was not found on this server.</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 405:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "405";
+                        response.ReasonPhrase = "Method Not Allowed";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>405 Method Not Allowed</title></head><body><h1>405 Method Not Allowed</h1><p>HTTP ERROR 405</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 411:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "411";
+                        response.ReasonPhrase = "Length Required";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>411 Length Required</title></head><body><h1>411 Length Required</h1><p>HTTP ERROR 411</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 500:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "500";
+                        response.ReasonPhrase = "Internal Server Error";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>500 Internal Server Error</title></head><body><h1>500 Internal Server Error</h1><p>HTTP ERROR 500</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 501:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "501";
+                        response.ReasonPhrase = "Not Implemented";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>501 Not Implemented</title></head><body><h1>501 Not Implemented</h1><p>HTTP ERROR 501</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 503:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "503";
+                        response.ReasonPhrase = "Service Unavailable";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>503 Service Unavailable</title></head><body><h1>503 Service Unavailable</h1><p>HTTP ERROR 503</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    case 505:
+                        response.Version = "HTTP/1.1";
+                        response.StatusCode = "505";
+                        response.ReasonPhrase = "HTTP Version not supported";
+                        response.Header.Add("Date", Date);
+                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        response.Header.Add("Connection", "Keep-Alive");
+                        response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(".html"));
+                        Html_Content = "<html><head><title>505 HTTP Version not supported</title></head><body><h1>505 HTTP Version not supported</h1><p>HTTP ERROR 505</p></body></html>";
+                        response.Content = System.Text.Encoding.Default.GetBytes(Html_Content);
+                        response.Header.Add("Content-Length", response.Content.Length.ToString());
+                        WriteResponse(sslStream, response);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            #endregion
+            catch (Exception ex)
             {
                 Console.Write(ex.Message);
             }

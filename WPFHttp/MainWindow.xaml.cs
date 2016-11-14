@@ -85,6 +85,7 @@ namespace WebServer.App
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
             HttpServer.SERVER_MAX_THREADS = 10;
             HttpServer.SITE_DEFAULT_PAGE = "index.html";
+            HttpServer.CERT_PATH = HttpServer.SITE_PATH + "\\key\\server.cer";
 
             InitializeComponent();
         }
@@ -108,6 +109,9 @@ namespace WebServer.App
                     ServerThread.Name = "Main Server Thread";
                     HttpServer.SERVER_THREAD = ServerThread;
                     ServerThread.Start();
+                    Thread SSLServerThread = new Thread(httpserver.StartSSL);
+                    SSLServerThread.Name = "SSL Server Thread";
+                    SSLServerThread.Start();
                 }
                 else
                 {

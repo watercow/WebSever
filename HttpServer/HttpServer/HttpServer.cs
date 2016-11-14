@@ -7,10 +7,11 @@ using System.Threading;
 using System.IO;
 using System.Net.Sockets;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
-using System.Net.NetworkInformation;
 using Microsoft.Win32;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebServer.HttpServer
 {
@@ -29,7 +30,13 @@ namespace WebServer.HttpServer
         public static IPAddress SITE_HOST { set; get; }
         public static string SITE_PATH { set; get; }
         public static string SITE_DEFAULT_PAGE { set; get; }
+
         public static TcpListener Listener { set; get; }
+        public static TcpListener HttpsListener { set; get; }
+
+
+        public static string CERT_PATH { set; get; }
+        public static X509Certificate SERVER_CERT;
 
         private List<HttpProcessor> proc_record;
         public List<HttpProcessor> PROC_RECORD
@@ -103,6 +110,45 @@ namespace WebServer.HttpServer
                 thread.Name = "HttpProc #" + i;
 
                 proc_record.Add(new_proc);
+
+#if CONSOLE_APP
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine(
+                    "收到Tcp连接请求 {0}: {1}",
+                    clientIP.Address,
+                    clientIP.Port);
+                Console.WriteLine(
+                    "开始请求处理");
+#endif
+
+                thread.Start();
+            }
+        }
+
+        public void StartSSL()
+        {
+            HttpsListener = new TcpListener(IPAddress.Any, 443);
+            HttpsListener.Start();
+            SERVER_CERT = X509Certificate2.CreateFromCertFile(HttpServer.CERT_PATH);
+
+#if CONSOLE_APP
+            Console.WriteLine("开始Https监听");
+#endif
+            while (true)
+            {
+                TcpClient new_client;
+                try
+                {
+                    new_client = HttpsListener.AcceptTcpClient();
+                }
+                catch
+                {
+                    break;
+                }
+                IPEndPoint clientIP = (IPEndPoint)new_client.Client.RemoteEndPoint;
+
+                HttpProcessor new_proc = new HttpProcessor(new_client);
+                Thread thread = new Thread(new_proc.SSLClientHandler);
 
 #if CONSOLE_APP
                 Console.WriteLine("--------------------------------");

@@ -38,7 +38,7 @@ namespace WebServer.HttpServer
                         response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
                         response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
                         buffer = Encoding.UTF8.GetBytes((response.GetResponse() + myOutput.ReadToEnd()));
-                        //myInput.Write(-1);
+                        myInput.Write(-1);
 
                         if (handle.HasExited == false)
                         {
