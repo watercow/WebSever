@@ -209,7 +209,7 @@ namespace WebServer.App
         {
             if (httpserver.PROC_RECORD.Count == 0)
             {
-                MessageBox.Show("尚未有接入的浏览器");
+                MessageBox.Show("尚未有来自客户端的请求");
             }
             else
             {

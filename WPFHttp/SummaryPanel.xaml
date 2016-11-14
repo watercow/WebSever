@@ -17,7 +17,7 @@
         </Grid.Effect>
         <TextBlock x:Name="RemoteIP" HorizontalAlignment="Left" TextWrapping="Wrap" Margin="10,10,0,0" Foreground="White" d:LayoutOverrides="Height"/>
         <StackPanel Margin="0,30,15,0" Grid.RowSpan="2">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0.333,5">
                 <TextBlock x:Name="RemoteVersion" TextWrapping="Wrap" FontSize="10" Foreground="White" Opacity="0.8" Margin="0,0,5,0"/>
                 <TextBlock x:Name="RemoteMethod" TextWrapping="Wrap"  FontSize="10" UseLayoutRounding="True" Foreground="White" Opacity="0.8" Margin="0,0,5,0"/>
                 <TextBlock x:Name="RemoteStatue" TextWrapping="Wrap"  FontSize="10" UseLayoutRounding="True" Foreground="White" Opacity="0.8" Margin="0,0,5,0"/>

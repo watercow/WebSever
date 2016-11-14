@@ -36,10 +36,10 @@
                 <Grid Background="#FFE5E5E5">
                     <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <Expander x:Name="expander" Header="Expander">
+                            <Expander x:Name="expander" Header="请求概要">
                                 <Grid>
                                     <StackPanel>
-                                        <Label x:Name="label" Content="Remote Client"/>
+                                        <Label x:Name="label" Content="远程客户端连接"/>
                                         <DataGrid x:Name="dataGrid" AutoGenerateColumns="False">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Binding="{Binding Id}" Header="Seq" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
@@ -55,10 +55,9 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </StackPanel>
-                                    <Grid Background="#FFE5E5E5" HorizontalAlignment="Right" Margin="0,0,-1071.307,0" VerticalAlignment="Top"/>
                                 </Grid>
                             </Expander>
-                            <Expander Header="See more info">
+                            <Expander Header="详细信息">
                                 <Grid>
                                     <StackPanel Margin="0,0,0,0.76">
                                         <WrapPanel x:Name="connection_monitor"/>
@@ -105,9 +104,6 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-            </TabItem>
-            <TabItem Header="历史连接" Margin="0">
-                <Grid Background="#FFE5E5E5" ScrollViewer.CanContentScroll="True"/>
             </TabItem>
 
         </TabControl>

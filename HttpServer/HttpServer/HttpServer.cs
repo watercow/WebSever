@@ -126,38 +126,5 @@ namespace WebServer.HttpServer
             Listener.Stop();
             SERVER_STATUS = false;
         }
-        public static List<string> GetIP()
-        {
-            NetworkInterface[] NetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-            List<string> listIPAddr = new List<string>();
-            foreach (NetworkInterface NetworkIntf in NetworkInterfaces)
-            {
-                string fRegistryKey = "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}\\" + NetworkIntf.Id + "\\Connection";
-                RegistryKey rk = Registry.LocalMachine.OpenSubKey(fRegistryKey, false);
-                if (rk != null)
-                {
-                    if (NetworkIntf.NetworkInterfaceType == NetworkInterfaceType.Ethernet || NetworkIntf.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
-                    {
-                        string fPnpInstanceID = rk.GetValue("PnpInstanceID", "").ToString();
-                        int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
-                        if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI")
-                        {
-                            IPInterfaceProperties IPInterfaceProperties = NetworkIntf.GetIPProperties();
-
-                            UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = IPInterfaceProperties.UnicastAddresses;
-
-                            foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection)
-                            {
-                                if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork)
-                                {
-                                    listIPAddr.Add(UnicastIPAddressInformation.Address.ToString());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return listIPAddr;
-        }
     }
 }
