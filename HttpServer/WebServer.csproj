@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpServer\GetIni.cs" />
+    <Compile Include="HttpServer\GetServerInfo.cs" />
     <Compile Include="HttpServer\Handlers\CgiHandler.cs" />
     <Compile Include="HttpServer\Handlers\FileHandler.cs" />
     <Compile Include="HttpServer\Exception\HttpException.cs" />
