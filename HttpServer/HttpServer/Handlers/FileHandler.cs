@@ -10,7 +10,7 @@ using WebServer.HttpServer.HttpException;
 
 namespace WebServer.HttpServer
 {
-    public class FileHandler
+    public static class FileHandler
     {
         public static string ParseUri(string uriIn)
         {
@@ -23,7 +23,7 @@ namespace WebServer.HttpServer
             return uriOut;
         }
 
-        public void GetHandler(HttpResponse response, HttpRequest request)
+        public static void StaticHandler(HttpResponse response, HttpRequest request)
         {
             string resourceUri = ParseUri(request.Uri);
             
@@ -48,54 +48,27 @@ namespace WebServer.HttpServer
                     gzip.Close();
                     response.Content =  ms.ToArray();
                     break;
+                case "compress":
+
+                    
+                    break;
+                case "deflate":
+                    MemoryStream ms2 = new MemoryStream();
+                    DeflateStream deflate = new DeflateStream(ms2, CompressionMode.Compress);
+                    deflate.Write(buffer, 0, buffer.Length);
+                    deflate.Close();
+                    response.Content = ms2.ToArray();
+                    break;
+
                 case "identity":
-                    response.Content = buffer;
+
                     break;
                 default:
                     response.Content = buffer;
                     break;
             }
         }
-
-        public void PostHandler(HttpResponse response, HttpRequest request)
-        {
-            string resourceUri = request.Uri;
-
-            if (request.Uri == "/")
-            {
-                resourceUri = request.Uri + "index.html";
-            }
-            resourceUri = HttpServer.SITE_PATH + resourceUri.Replace('/', '\\');
-
-            byte[] buffer = File.ReadAllBytes(resourceUri);
-
-            string pattern = @".[^.\/:*?<>|]*$";
-            string extension = Regex.Match(resourceUri, pattern).Value;
-            response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(extension));
-
-            string encoding = "identity";
-            if (response.Header.ContainsKey("Content-Encoding"))
-            {
-                encoding = response.Header["Content-Encoding"];
-            }
-
-            switch (encoding)
-            {
-                case "gzip":
-                    MemoryStream ms = new MemoryStream();
-                    GZipStream gzip = new GZipStream(ms, CompressionMode.Compress);
-                    gzip.Write(buffer, 0, buffer.Length);
-                    gzip.Close();
-                    response.Content = ms.ToArray();
-                    break;
-                case "identity":
-                    response.Content = buffer;
-                    break;
-                default:
-                    response.Content = buffer;
-                    break;
-            }
-        }
+        
     }
 
     public class QuickMimeTypeMapper

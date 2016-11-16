@@ -29,8 +29,8 @@ namespace HttpServer.HttpServer
             {
                 Method = new List<string>();
                 Method.Add("OPTIONS");
-                Method.Add("HEAD");
                 Method.Add("GET");
+                Method.Add("HEAD");
                 Method.Add("POST");
                 Method.Add("PUT");
                 Method.Add("DELETE");
