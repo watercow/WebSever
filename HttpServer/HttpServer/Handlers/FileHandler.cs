@@ -49,8 +49,6 @@ namespace WebServer.HttpServer
                     response.Content =  ms.ToArray();
                     break;
                 case "compress":
-
-                    
                     break;
                 case "deflate":
                     MemoryStream ms2 = new MemoryStream();
@@ -59,9 +57,8 @@ namespace WebServer.HttpServer
                     deflate.Close();
                     response.Content = ms2.ToArray();
                     break;
-
                 case "identity":
-
+                    response.Content = buffer;
                     break;
                 default:
                     response.Content = buffer;
