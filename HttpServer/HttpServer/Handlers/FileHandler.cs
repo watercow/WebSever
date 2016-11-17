@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using WebServer.HttpServer.HttpException;
+using HttpServer.HttpServer;
 
 namespace WebServer.HttpServer
 {
@@ -26,9 +27,11 @@ namespace WebServer.HttpServer
         public static void StaticHandler(HttpResponse response, HttpRequest request)
         {
             string resourceUri = ParseUri(request.Uri);
-            
+            string filename = Path.GetFileName(resourceUri);
+            List<string> allowedmethod = GetIni.GetList("C:\\Users\\xcy\\Desktop\\WebSever\\demo.ini", filename, "Method");
+            if ((allowedmethod == null) || (allowedmethod.Contains(request.Method) == false))
+                throw new HttpException.HttpException("405 method not allowed", 405);
             byte[] buffer = File.ReadAllBytes(resourceUri);
-
             string pattern = @".[^.\/:*?<>|]*$";
             string extension = Regex.Match(resourceUri, pattern).Value;
             response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(extension));
