@@ -20,15 +20,14 @@ namespace WebServer.HttpServer
                         Environment.SetEnvironmentVariable("REDIRECT_STATUS", "true");
                         Environment.SetEnvironmentVariable("GATEWAY_INTERFACE", "CGI/1.1");
                         Environment.SetEnvironmentVariable("SCRIPT_FILENAME", php_uri);
-                        Environment.SetEnvironmentVariable("QUERY_STRING", form);
+                        Environment.SetEnvironmentVariable("QUERY_STRING", form + '\n');
                         Environment.SetEnvironmentVariable("REQUEST_METHOD", "GET");
 
                         ProcessStartInfo pri = new ProcessStartInfo(HttpServer.SITE_PATH + @"\config.bat");
                         pri.UseShellExecute = false;
                         pri.RedirectStandardInput = true;
                         pri.RedirectStandardOutput = true;
-
-                        //pri.Arguments = @"true CGI\1.1 " + php_uri + @" """ + form +  @""" GET";
+                        
                         Process handle = Process.Start(pri);
                         System.IO.StreamReader myOutput = handle.StandardOutput;
                         System.IO.StreamWriter myInput = handle.StandardInput;

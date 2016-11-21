@@ -76,18 +76,34 @@ namespace WebServer.App
     public partial class MainWindow : Window
     {
         public HttpServer httpserver;
+        Thread HttpThread;
+        //Thread HttpsThread;
         
         public MainWindow()
         {
-            //设置默认配置信息
             httpserver = new HttpServer(80, IPAddress.Any);
-            HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
-            HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
+            //设置默认配置信息
             HttpServer.SERVER_MAX_THREADS = 10;
+            HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
             HttpServer.SITE_DEFAULT_PAGE = "index.html";
+            HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
             HttpServer.CERT_PATH = HttpServer.SITE_PATH + "\\key\\server.cer";
 
+            httpserver.InnerException += ServerExceptionHandler;    /*订阅HttpServer中的异常事件*/
+
             InitializeComponent();
+        }
+
+        private void ServerExceptionHandler(object sender, string message)
+        {
+            MessageBox.Show(message, "服务器内部错误");
+            HttpThread.Abort();
+            //HttpsThread.Abort();
+            HttpServer.SERVER_STATUS = false;
+        }
+
+        private void ServerStateHandler(object sender, EventArgs e)
+        {
         }
         
         private void start_server(object sender, RoutedEventArgs e)
@@ -100,18 +116,20 @@ namespace WebServer.App
             {
                 if (HttpServer.SERVER_STATUS == false)
                 {
+                    //创建Http服务器主线程
+                    HttpThread = new Thread(httpserver.Start);
+                    HttpThread.Name = "Http Server";
+                    HttpThread.Start();
+
+                    //创建Https服务器主线程
+                    //HttpsThread = new Thread(httpserver.StartSSL);
+                    //HttpsThread.Name = "SSL Server";
+                    //HttpsThread.Start();
+
+                    //设置开始/停止按钮样式
                     this.btn_start_server.Background = new SolidColorBrush(Colors.Blue);
                     this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
                     this.server_config.IsEnabled = false;
-
-                    //Create the main server thread
-                    Thread ServerThread = new Thread(httpserver.Start);
-                    ServerThread.Name = "Main Server Thread";
-                    HttpServer.SERVER_THREAD = ServerThread;
-                    ServerThread.Start();
-                    Thread SSLServerThread = new Thread(httpserver.StartSSL);
-                    SSLServerThread.Name = "SSL Server Thread";
-                    SSLServerThread.Start();
                 }
                 else
                 {
