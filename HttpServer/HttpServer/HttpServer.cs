@@ -92,7 +92,14 @@ namespace WebServer.HttpServer
                 for (int i = 1; true; i++)
                 {
                     TcpClient new_client;
-                    new_client = Listener.AcceptTcpClient();
+                    try
+                    {
+                        new_client = Listener.AcceptTcpClient();
+                    }
+                    catch
+                    {
+                        break;
+                    }
                     HttpProcessor new_proc = new HttpProcessor(new_client);
                     new_proc.RemoteIP = ((IPEndPoint)new_client.Client.RemoteEndPoint).Address.ToString();
                     new_proc.RemotePort = ((IPEndPoint)new_client.Client.RemoteEndPoint).Port.ToString();
@@ -146,6 +153,16 @@ namespace WebServer.HttpServer
             }
             Listener.Stop();
             SERVER_STATUS = false;
-        }        
+        }
+
+        public void CloseSSL()
+        {
+            while (HttpsListener.Pending() == true)
+            {
+                Thread.Sleep(5);
+            }
+            HttpsListener.Stop();
+            SERVER_STATUS = false;
+        }
     }
 }
