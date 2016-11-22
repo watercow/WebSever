@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Threading;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Net;
 
 namespace WebServer.App
@@ -21,7 +12,7 @@ namespace WebServer.App
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    
+
     //用来作为datagrid绑定的类
     public class DataGrid_BD
     {
@@ -88,8 +79,9 @@ namespace WebServer.App
             HttpServer.SERVER_MAX_THREADS = 10;
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
             HttpServer.SITE_DEFAULT_PAGE = "index.html";
-            HttpServer.SITE_PATH = @"C:\Users\Will\Desktop\WebSever\HttpServer\Resources";
+            HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
             HttpServer.CERT_PATH = HttpServer.SITE_PATH + "\\key\\server.cer";
+            HttpServer.PHP_PATH = @"C:\php\php-cgi.exe";
 
             httpserver.InnerException += ServerExceptionHandler;    /*订阅HttpServer中的异常事件*/
 
@@ -286,8 +278,7 @@ namespace WebServer.App
                 //作为绑定数据的类的实例----作为数组进行创建
 
                 DataGrid_BD[] datagrid_bd = new DataGrid_BD[now_count];
-
-
+                
                 for (int j = 0; j < now_count; j++)
                 {
                     datagrid_bd[j] = new DataGrid_BD(j + 1,

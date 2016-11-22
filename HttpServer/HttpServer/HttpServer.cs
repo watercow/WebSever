@@ -36,6 +36,8 @@ namespace WebServer.HttpServer
         public static TcpListener Listener { set; get; }
         public static TcpListener HttpsListener { set; get; }
 
+        public static string PHP_PATH { set; get; }
+
         public static string CERT_PATH { set; get; }
         public static X509Certificate SERVER_CERT;
 
@@ -128,14 +130,27 @@ namespace WebServer.HttpServer
                 HttpsListener.Start();                
                 SERVER_STATUS = true;
 
-                while (true)
+                for (int i = 1; true; i++)
                 {
                     TcpClient new_client;
-                    new_client = HttpsListener.AcceptTcpClient();
+                    try
+                    {
+                        new_client = HttpsListener.AcceptTcpClient();
+                    }
+                    catch
+                    {
+                        break;
+                    }
 
                     HttpProcessor new_proc = new HttpProcessor(new_client);
+                    new_proc.RemoteIP = ((IPEndPoint)new_client.Client.RemoteEndPoint).Address.ToString();
+                    new_proc.RemotePort = ((IPEndPoint)new_client.Client.RemoteEndPoint).Port.ToString();
+
                     Thread thread = new Thread(new_proc.SSLClientHandler);
-                    
+                    thread.Name = "HttpProc #" + i;
+
+                    proc_record.Add(new_proc);
+
                     thread.Start();
                 }
             }

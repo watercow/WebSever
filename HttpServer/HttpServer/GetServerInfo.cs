@@ -14,9 +14,9 @@ using System.Text.RegularExpressions;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-namespace HttpServer.HttpServer
+namespace WebServer.HttpServer
 {
-    class GetServerInfo
+    public class GetServerInfo
     {
         public static Dictionary<int, string> Content = new Dictionary<int, string>()
         {

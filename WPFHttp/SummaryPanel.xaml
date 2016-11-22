@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WebServer.App"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
-             MaxHeight="200" MaxWidth="200">
+             MaxHeight="200" MaxWidth="200" Margin="10,10,0,0">
     <Grid Background="#FF727272">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>

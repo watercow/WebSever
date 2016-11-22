@@ -23,22 +23,18 @@ namespace WebServer.HttpServer
                         Environment.SetEnvironmentVariable("QUERY_STRING", form + '\n');
                         Environment.SetEnvironmentVariable("REQUEST_METHOD", "GET");
 
-                        ProcessStartInfo pri = new ProcessStartInfo(HttpServer.SITE_PATH + @"\config.bat");
+                        ProcessStartInfo pri = new ProcessStartInfo(HttpServer.PHP_PATH);
                         pri.UseShellExecute = false;
                         pri.RedirectStandardInput = true;
                         pri.RedirectStandardOutput = true;
                         
                         Process handle = Process.Start(pri);
                         System.IO.StreamReader myOutput = handle.StandardOutput;
-                        System.IO.StreamWriter myInput = handle.StandardInput;
-
                         response.Version = request.Version;
                         response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
                         response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
                         response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
                         buffer = Encoding.UTF8.GetBytes((response.GetResponse() + myOutput.ReadToEnd()));
-                        myInput.Write(-1);
-
                         if (handle.HasExited == false)
                         {
                             //当php解释进程未正常退出时
@@ -46,7 +42,6 @@ namespace WebServer.HttpServer
                             handle.Kill();
                             handle.Close();
                         }
-
                         break;
                     }
                 #endregion
@@ -61,7 +56,7 @@ namespace WebServer.HttpServer
                         Environment.SetEnvironmentVariable("CONTENT_LENGTH", request.Header["Content-Length"]);
                         Environment.SetEnvironmentVariable("CONTENT_TYPE", request.Header["Content-Type"]);
 
-                        ProcessStartInfo pri = new ProcessStartInfo(HttpServer.SITE_PATH + @"\config.bat");
+                        ProcessStartInfo pri = new ProcessStartInfo(HttpServer.PHP_PATH);
                         pri.UseShellExecute = false;
                         pri.RedirectStandardInput = true;
                         pri.RedirectStandardOutput = true;
@@ -92,12 +87,8 @@ namespace WebServer.HttpServer
                 default:
                     {
                         response = new HttpResponse();
-                        response.Version = request.Version;
-                        response.StatusCode = Convert.ToString((int)HttpStatusCode.Ok);
-                        response.ReasonPhrase = Convert.ToString(HttpStatusCode.Ok.ToString());
-                        response.Header.Add("Server", "Niushen/6.6.66(Niuix) DAV/2 mod_jk/1.2.23");
+                        GetServerInfo.GetInfo(response, 200);
                         buffer = Encoding.UTF8.GetBytes(response.GetResponse());
-
                         break;
                     }
             }

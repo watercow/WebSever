@@ -63,6 +63,8 @@ namespace WebServer.HttpServer
                     gzip.Close();
                     response.Content =  ms.ToArray();
                     break;
+                case "compress":
+                    break;
                 case "deflate":
                     MemoryStream ms2 = new MemoryStream();
                     DeflateStream deflate = new DeflateStream(ms2, CompressionMode.Compress);

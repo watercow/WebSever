@@ -35,39 +35,37 @@
         <TabControl x:Name="tabControl" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" HorizontalContentAlignment="Center" Grid.Row="2">
             <TabItem Header="连接监控">
                 <Grid Background="#FFE5E5E5">
-                    <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Expander x:Name="expander" Header="请求概要">
-                                <Grid>
-                                    <StackPanel>
-                                        <Label x:Name="label" Content="远程客户端连接"/>
-                                        <DataGrid x:Name="dataGrid" AutoGenerateColumns="False">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Binding="{Binding Id}" Header="Seq" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding IP}" Header="IP" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Port}" Header="Port" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Version}" Header="Version" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Method}" Header="Method" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Status}" Header="Status" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding URI}" Header="Uri" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Host}" Header="Host" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding User_Agent}" Header="User-Agent" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Accept}" Header="Accept" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                                <DataGridTextColumn Binding="{Binding Accept_Language}" Header="Accept-Language" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </StackPanel>
-                                </Grid>
-                            </Expander>
-                            <Expander Header="详细信息">
-                                <Grid>
-                                    <StackPanel Margin="0,0,0,0.76">
-                                        <WrapPanel x:Name="connection_monitor"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Expander>
-                        </StackPanel>
-                    </ScrollViewer>
+                    <StackPanel x:Name="stackPanel">
+                        <Expander x:Name="expander" Header="请求概要">
+                            <Grid>
+                                <StackPanel>
+                                    <Label x:Name="label" Content="远程客户端连接"/>
+                                    <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" MaxHeight="300">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding Id}" Header="Seq" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding IP}" Header="IP" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Port}" Header="Port" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Version}" Header="Version" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Method}" Header="Method" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Status}" Header="Status" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding URI}" Header="Uri" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Host}" Header="Host" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding User_Agent}" Header="User-Agent" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Accept}" Header="Accept" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Accept_Language}" Header="Accept-Language" FontFamily="Berlin Sans FB Demi" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Grid>
+                        </Expander>
+                        <Expander Header="详细信息">
+                            <Grid x:Name="grid1">
+                                <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" Height="424" Margin="0,0,0.333,-390.667">
+                                    <WrapPanel x:Name="connection_monitor" ScrollViewer.CanContentScroll="True" Width="1071"/>
+                                </ScrollViewer>
+                            </Grid>
+                        </Expander>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="服务器配置" Loaded="show_server_config">
@@ -85,23 +83,23 @@
                         <StackPanel x:Name="server_config" Margin="0">
                             <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
                                 <Label Content="服务器工作地址"/>
-                                <TextBox x:Name="tbx_server_ip" Text="null"  TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
+                                <TextBox x:Name="tbx_server_ip" Text="null"  TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="300" Background="White" Foreground="#FFA0A0A0"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
                                 <Label Content="服务器监听端口"/>
-                                <TextBox x:Name="tbx_server_port" TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
+                                <TextBox x:Name="tbx_server_port" TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="300" Background="White" Foreground="#FFA0A0A0"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
                                 <Label Content="服务器站点目录"/>
-                                <TextBox x:Name="tbx_site_path" TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
+                                <TextBox x:Name="tbx_site_path" TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="300" Background="White" Foreground="#FFA0A0A0"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
                                 <Label Content="服务器线程上限"/>
-                                <TextBox x:Name="tbx_thread_max" TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="118" Background="White" Foreground="#FFA0A0A0"/>
+                                <TextBox x:Name="tbx_thread_max" TextWrapping="Wrap" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="300" Background="White" Foreground="#FFA0A0A0"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
-                                <Button x:Name="button" Click="save_config" Content="保存" Margin="30,0,0,0" Height="46" Width="197"/>
-                                <Button x:Name="button1" Click="reset_config" Content="重置" Margin="90,0,0,0" RenderTransformOrigin="-1.623,0.438" Width="70"/>
+                                <Button x:Name="button" Click="save_config" Content="保存" Margin="30,0,0,0" Height="46" Width="150"/>
+                                <Button x:Name="button1" Click="reset_config" Content="重置" Margin="80,0,0,0" RenderTransformOrigin="-1.623,0.438" Width="150"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
