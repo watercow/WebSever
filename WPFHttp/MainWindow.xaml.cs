@@ -79,7 +79,7 @@ namespace WebServer.App
             HttpServer.SERVER_MAX_THREADS = 10;
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
             HttpServer.SITE_DEFAULT_PAGE = "index.html";
-            HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
+            HttpServer.SITE_PATH = @"D:\GitHub for windows\Git2\HttpServer\Resources";
             HttpServer.CERT_PATH = HttpServer.SITE_PATH + "\\key\\server.cer";
             HttpServer.PHP_PATH = @"C:\php\php-cgi.exe";
 
@@ -306,7 +306,15 @@ namespace WebServer.App
                         datagrid_bd[j].Host = httpserver.PROC_RECORD[j].request.Header["Host"];
                         datagrid_bd[j].User_Agent = httpserver.PROC_RECORD[j].request.Header["User-Agent"];
                         datagrid_bd[j].Accept = httpserver.PROC_RECORD[j].request.Header["Accept"];
-                        datagrid_bd[j].Accept_Language = httpserver.PROC_RECORD[j].request.Header["Accept-Language"];
+                        if(datagrid_bd[j].Accept_Language==null)
+                        {
+                            datagrid_bd[j].Accept_Language = "N/A";
+                        }
+                        else
+                        {
+                            datagrid_bd[j].Accept_Language = httpserver.PROC_RECORD[j].request.Header["Accept-Language"];
+                        }
+                        
 
                         //窗口信息显示
                         SummaryPanel moreinfo = new SummaryPanel();

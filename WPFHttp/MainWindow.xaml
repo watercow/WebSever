@@ -34,7 +34,7 @@
         </ToolBar>
         <TabControl x:Name="tabControl" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" HorizontalContentAlignment="Center" Grid.Row="2">
             <TabItem Header="连接监控">
-                <Grid Background="#FFE5E5E5">
+                <Grid Background="#FFE5E5E5" Margin="0,0,-0.2,-21.6">
                     <StackPanel x:Name="stackPanel">
                         <Expander x:Name="expander" Header="请求概要">
                             <Grid>
@@ -60,7 +60,7 @@
                         </Expander>
                         <Expander Header="详细信息">
                             <Grid x:Name="grid1">
-                                <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" Height="424" Margin="0,0,0.333,-390.667">
+                                <ScrollViewer VerticalAlignment="Top" CanContentScroll="True" Height="424" Margin="0,0,0.0,0">
                                     <WrapPanel x:Name="connection_monitor" ScrollViewer.CanContentScroll="True" Width="1071"/>
                                 </ScrollViewer>
                             </Grid>
