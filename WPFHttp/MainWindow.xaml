@@ -27,8 +27,9 @@
             </MenuItem>
         </Menu>
         <ToolBar x:Name="toolBar" Grid.Row="1" d:LayoutOverrides="Width, LeftMargin, RightMargin, TopMargin, BottomMargin" IsHitTestVisible="True">
-            <Button x:Name="btn_start_server" Click="start_server" Content="开始" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="75" Margin="0,0,0,-0.4" Background="#FF747474" Foreground="White" Height="26"/>
-            <Button x:Name="btn_stop_server" Click="stop_server" Content="暂停" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="75" Margin="0" Background="#FF747474" Foreground="White"/>
+            <Button x:Name="btn_start_server" Click="start_server" Content="http服务" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="75" Margin="0,0,0,-0.4" Background="#FF747474" Foreground="White" Height="26"/>
+            <Button x:Name="btn_start2_server" Click="start_https_server" Content="https服务" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="75" Margin="0,0,0,-0.4" Background="#FF747474" Foreground="White" Height="26"/>
+            <Button x:Name="btn_stop_server" Click="stop_server" Content="关闭服务" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="75" Margin="0" Background="#FF747474" Foreground="White"/>
             <Button x:Name="btn_show_connect" Click="show_connect" Content="刷新连接" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="75" Margin="0" Background="#FF747474" Foreground="White"/>
         </ToolBar>
         <TabControl x:Name="tabControl" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" HorizontalContentAlignment="Center" Grid.Row="2">

@@ -77,8 +77,10 @@ namespace WebServer.App
     {
         public HttpServer httpserver;
         Thread HttpThread;
-        //Thread HttpsThread;
-        
+        Thread HttpsThread;
+
+        public bool flag_http_s=false;
+
         public MainWindow()
         {
             httpserver = new HttpServer(80, IPAddress.Any);
@@ -86,7 +88,7 @@ namespace WebServer.App
             HttpServer.SERVER_MAX_THREADS = 10;
             HttpServer.PROTOCOL_VERSION = "HTTP/1.1";
             HttpServer.SITE_DEFAULT_PAGE = "index.html";
-            HttpServer.SITE_PATH = @"C:\Users\xwh16\Desktop\WebSever\HttpServer\Resources";
+            HttpServer.SITE_PATH = @"C:\Users\Will\Desktop\WebSever\HttpServer\Resources";
             HttpServer.CERT_PATH = HttpServer.SITE_PATH + "\\key\\server.cer";
 
             httpserver.InnerException += ServerExceptionHandler;    /*订阅HttpServer中的异常事件*/
@@ -97,13 +99,22 @@ namespace WebServer.App
         private void ServerExceptionHandler(object sender, string message)
         {
             MessageBox.Show(message, "服务器内部错误");
-            HttpThread.Abort();
-            //HttpsThread.Abort();
+            if (flag_http_s == true)
+            {
+                HttpThread.Abort();
+            }
+            else
+            {
+                HttpsThread.Abort();
+            }
+            
             HttpServer.SERVER_STATUS = false;
-        }
 
-        private void ServerStateHandler(object sender, EventArgs e)
-        {
+            //设置开始/停止按钮样式
+            this.btn_start2_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+            this.btn_start_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+            this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+            this.server_config.IsEnabled = false;
         }
         
         private void start_server(object sender, RoutedEventArgs e)
@@ -116,18 +127,15 @@ namespace WebServer.App
             {
                 if (HttpServer.SERVER_STATUS == false)
                 {
+                    flag_http_s = true;
                     //创建Http服务器主线程
                     HttpThread = new Thread(httpserver.Start);
                     HttpThread.Name = "Http Server";
                     HttpThread.Start();
 
-                    //创建Https服务器主线程
-                    //HttpsThread = new Thread(httpserver.StartSSL);
-                    //HttpsThread.Name = "SSL Server";
-                    //HttpsThread.Start();
-
                     //设置开始/停止按钮样式
                     this.btn_start_server.Background = new SolidColorBrush(Colors.Blue);
+                    this.btn_start2_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
                     this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
                     this.server_config.IsEnabled = false;
                 }
@@ -139,15 +147,55 @@ namespace WebServer.App
             
         }
 
+        private void start_https_server(object sender, RoutedEventArgs e)
+        {
+            if (this.tbx_server_ip.Text == "null")
+            {
+                MessageBox.Show("请先配置IP");
+            }
+            else
+            {
+                if (HttpServer.SERVER_STATUS == false)
+                {
+                    flag_http_s = false;
+                    //创建Https服务器主线程
+                    HttpsThread = new Thread(httpserver.StartSSL);
+                    HttpsThread.Name = "SSL Server";
+                    HttpsThread.Start();
+
+                    //设置开始/停止按钮样式
+                    this.btn_start2_server.Background = new SolidColorBrush(Colors.Blue);
+                    this.btn_start_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+                    this.btn_stop_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+                    this.server_config.IsEnabled = false;
+                }
+                else
+                {
+                    MessageBox.Show("已经有正在运行的服务器例程");
+                }
+            }
+
+        }
+
         private void stop_server(object sender, RoutedEventArgs e)
         {
             if (HttpServer.SERVER_STATUS == true)
             {
                 this.server_config.IsEnabled = true;
                 this.btn_start_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
+                this.btn_start2_server.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x74, 0x74, 0x74));
                 this.btn_stop_server.Background = new SolidColorBrush(Colors.Blue);
 
-                this.httpserver.Close();
+
+                if(flag_http_s==true)
+                {
+                    this.httpserver.Close();
+                }
+                else
+                {
+                    this.httpserver.CloseSSL();
+                }
+                flag_http_s = false;
             }
             else
             {
@@ -297,22 +345,5 @@ namespace WebServer.App
                 }
             }
         }
-
-
-        //将16进制转化为Argb的颜色表示
-        private Color ToColor(string colorName)
-        {
-            if (colorName.StartsWith("#"))
-                colorName = colorName.Replace("#", string.Empty);
-            int v = int.Parse(colorName, System.Globalization.NumberStyles.HexNumber);
-            return new Color()
-            {
-                A = Convert.ToByte((v >> 24) & 255),
-                R = Convert.ToByte((v >> 16) & 255),
-                G = Convert.ToByte((v >> 8) & 255),
-                B = Convert.ToByte((v >> 0) & 255)
-            };
-        }
-        
     }
 }
