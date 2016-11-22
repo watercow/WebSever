@@ -74,27 +74,7 @@ namespace WebServer.HttpServer
 
                 inputStream.Close();
                 inputStream = null;
-
-                #region CONSOLE
-#if CONSOLE_APP
-                Console.WriteLine("\n解析请求行...");
-                Console.WriteLine(
-                        "Method : {0} \nUri : {1} \nVer : {2} ",
-                        request.Method,
-                        request.Uri,
-                        request.Version
-                        );
-                Console.WriteLine("--------------------------------");
-                Console.WriteLine("Following is the parsed headers:");
-                Console.WriteLine("--------------------------------");
-                foreach (KeyValuePair<string, string> item in request.Header)
-                {
-                    Console.WriteLine("{0}: {1}", item.Key, item.Value);
-                }
-#endif
-                #endregion
-
-                //断开连接
+                
             }
             #region Http Exception Handler
             catch (HttpException.HttpException ex)
@@ -110,12 +90,13 @@ namespace WebServer.HttpServer
             }
             finally
             {
+                //断开连接
                 client.Close();
                 ((IDisposable)client).Dispose();
             }
         }
 
-        public void SSLClientHandler()    //Thread实例使用object对象
+        public void SSLClientHandler()  
 
         {
             Stream RawStream = client.GetStream();
@@ -323,33 +304,39 @@ namespace WebServer.HttpServer
         private static HttpRequest GetRequest(Stream inputStream)
         {
             HttpRequest request = new HttpRequest();
-
+            //读取Http请求首行
             string thisLine = Readline(inputStream);
             string[] tokens = thisLine.Split(' ');
             if (tokens.Length != 3)
             {
+                //非法的首行导致Http 400错误
                 throw new HttpException.HttpException("400 bad request", 400);
             }
             request.Method = tokens[0];
+
             if (request.Method == "HEAD" || request.Method == "PUT" || request.Method == "DELETE")
                 throw new HttpException.HttpException("501 not implemented", 501);
+
             request.Uri = tokens[1];
             request.Version = tokens[2];
 
             if (request.Version != HttpServer.PROTOCOL_VERSION)
             {
+                //错误的Http版本导致Http 505错误
                 throw new HttpException.HttpException("Wrong HTTP version: " + request.Version, 505);
             }
 
+            //处理Http请求首部
             Dictionary<string, string> requestHeader = new Dictionary<string, string>();
             while ((thisLine = Readline(inputStream)) != null)
             {
                 if (thisLine.Length == 0) { break; }
-
-                string pattern = @"^(?<headerName>(\w+-?\w+)+):\s(?<headerValue>[^,\s]*)";  //Header value处排除了','号匹配，这样只会选择第一个属性
+                //使用正则表达式匹配并提取首部信息
+                string pattern = @"^(?<headerName>(\w+-?\w+)+):\s(?<headerValue>[^,\s]*)";  //Header value处排除了','号匹配，这样只会选择第一个值
                 Match header = Regex.Match(thisLine, pattern);
                 if (header.Success == false)
                 {
+                    //无法正确匹配的首部导致Http 400错误
                     throw new HttpException.HttpException("400 bad request: " + thisLine, 400);
                 }
                 requestHeader.Add(header.Result("${headerName}"), header.Result("${headerValue}"));
@@ -362,7 +349,6 @@ namespace WebServer.HttpServer
                 int totalBytes = Convert.ToInt32(request.Header["Content-Length"]);
                 int bytesRead = 0;
                 byte[] buffer = new byte[totalBytes];
-
                 while (bytesRead < totalBytes)
                 {
                     int n = inputStream.Read(buffer, bytesRead, totalBytes - bytesRead);
@@ -439,8 +425,8 @@ namespace WebServer.HttpServer
             while (true)
             {
                 pt = stream.ReadByte();
-                if (pt == '\r') { continue; }   //Carriage -  Return
-                if (pt == '\n') { break; }      //    Line -  Feed
+                if (pt == '\r') { continue; }   //Carriage Return
+                if (pt == '\n') { break; }      //Line Feed
                 if (pt == -1) { Thread.Sleep(1); continue; }    //等待数据流传输
                 data += Convert.ToChar(pt);
             }

@@ -18,30 +18,42 @@ namespace WebServer.HttpServer
             string uriOut = uriIn;
             if (uriIn == "/")
             {
+                //对站点根目录的访问返回站点预设页面
                 uriOut = uriOut + HttpServer.SITE_DEFAULT_PAGE;
             }
+            //替换为Windows环境资源分界符
             uriOut = HttpServer.SITE_PATH + uriOut.Replace('/', '\\');
             return uriOut;
         }
 
         public static void StaticHandler(HttpResponse response, HttpRequest request)
         {
+            //解析请求资源Uri
             string resourceUri = ParseUri(request.Uri);
             string filename = Path.GetFileName(resourceUri);
-            List<string> allowedmethod = GetIni.GetList("C:\\Users\\xcy\\Desktop\\WebSever\\demo.ini", filename, "Method");
-            if ((allowedmethod == null) || (allowedmethod.Contains(request.Method) == false))
+            
+            //检查文件访问控制属性
+            List<string> allowedmethod = GetIni.GetList(Path.GetDirectoryName(resourceUri) + @"\.access.ini", filename);
+            //如果请求的方法不在文件的支持方法列表中，则触发405异常
+            if (allowedmethod.Contains(request.Method) == false)
                 throw new HttpException.HttpException("405 method not allowed", 405);
+        
+            //读取文件数据
             byte[] buffer = File.ReadAllBytes(resourceUri);
+
+            //解析文件媒体类型
             string pattern = @".[^.\/:*?<>|]*$";
-            string extension = Regex.Match(resourceUri, pattern).Value;
+            string extension = Regex.Match(filename, pattern).Value;
             response.Header.Add("Content-Type", QuickMimeTypeMapper.GetMimeType(extension));
 
-            string encoding = "identity";
+            string encoding = "identity";   //默认使用identity编码
             if (response.Header.ContainsKey("Content-Encoding"))
             {
+                //使用请求指定的编码
                 encoding = response.Header["Content-Encoding"];
             }
 
+            //对文件数据进行编码
             switch (encoding)
             {
                 case "gzip":
@@ -50,8 +62,6 @@ namespace WebServer.HttpServer
                     gzip.Write(buffer, 0, buffer.Length);
                     gzip.Close();
                     response.Content =  ms.ToArray();
-                    break;
-                case "compress":
                     break;
                 case "deflate":
                     MemoryStream ms2 = new MemoryStream();
