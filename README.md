@@ -29,5 +29,3 @@
     6. HTTPVersionNotSupported
 ### 6.HttpResponse/HttpRequest.cs
     定义了Http请求与响应报文的基本结构
-## 第二阶段：功能充钱
-## 第三阶段：taking off
